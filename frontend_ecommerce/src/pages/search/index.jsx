@@ -1,0 +1,44 @@
+import { useEffect, useState } from "react";
+import { productApi } from "../../api/productApi";
+import { Link } from "react-router-dom";
+import LayoutProduct from "../../components/common/LayoutProduct";
+
+const Search = () => {
+  const [data, setData] = useState([]);
+    const searchQuery = new URLSearchParams(location.search);
+    const cat = searchQuery.get("cat") || "all";
+    const q = searchQuery.get("q");
+    useEffect(() => {
+      const params = {
+        search: q,
+      };
+        const fetchApi = async () => {
+            const res = await productApi.search(cat, params);
+            setData(res.data);
+        }
+        fetchApi();
+    },[cat,q])
+  return (
+    <div className="bg-[#F1F5F6]">
+      <div className="bg-[url(https://demo-uminex.myshopify.com/cdn/shop/files/bg_breadcrumbs_1920x.png?v=1684232545)] h-36 text-white flex justify-center items-center flex-col gap-y-3">
+        <h2 className="text-2xl font-semibold">{data.length} RESULTS FOR "{q}"</h2>
+        <div>
+          <ul className="flex items-center gap-x-2">
+            <li>
+              <Link to={"/"} href="">Home</Link>
+            </li>
+            <li>/</li>
+            <li>
+              <a href="">Search</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="py-3 max-w-[1410px] px-5 mx-auto">
+        <LayoutProduct data={data}/>
+      </div>
+    </div>
+  )
+}
+
+export default Search

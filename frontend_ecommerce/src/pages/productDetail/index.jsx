@@ -15,13 +15,13 @@ import { Product } from "../../components/common";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { useScrollTop } from "../../hooks";
+import { useGetId } from "../../hooks/hooksApi/useGetId";
+import { AppURL } from "../../api/AppURL";
+import { useParams } from "react-router-dom";
 const ProductDetail = () => {
+  const {slug} = useParams();
   const products = Array(10).fill(null);
-  const [size, setSize] = useState("128gb");
-  const [src, setSrc] = useState(
-    "https://demo-uminex.myshopify.com/cdn/shop/products/products_12_1.jpg?v=1672302207&width=360"
-  );
-  const [color, setColor] = useState("white");
+  const { data, size, src, color, setColor, setSize, setSrc } = useGetId(slug);
   const [des, setDes] = useState("des");
   useScrollTop();
   var settings = {
@@ -105,7 +105,7 @@ const ProductDetail = () => {
             </li>
             <li>/</li>
             <li>
-              <a href="">Apple iPhone 13 Mini 128GB Pink– Unlocked</a>
+              <a href="">{data?.name}</a>
             </li>
           </ul>
         </div>
@@ -117,7 +117,7 @@ const ProductDetail = () => {
                   <Zoom>
                     <img
                       className="w-full origin-center object-cover h-full"
-                      ref={imageRef} 
+                      ref={imageRef}
                       src={src}
                       alt=""
                     />
@@ -125,17 +125,19 @@ const ProductDetail = () => {
                 </div>
                 <div className="mt-16">
                   <ul className="flex flex-col gap-2">
-                    {image.map((item) => (
+                    {data?.images?.map((item) => (
                       <li
                         key={item.id}
                         className={`border rounded-md p-[1px] overflow-hidden border-gray-200 cursor-pointer ${
-                          item.src === src ? "!border-blue-500" : ""
+                          AppURL.ImageUrl + item.image_url === src
+                            ? "!border-blue-500"
+                            : ""
                         }`}
                       >
                         <img
                           onClick={handleClickImage}
                           className="w-[70px]"
-                          src={item.src}
+                          src={AppURL.ImageUrl + item.image_url}
                           alt=""
                         />
                       </li>
@@ -146,9 +148,7 @@ const ProductDetail = () => {
             </div>
             <div className="basis-1/2">
               <div className="mt-16">
-                <h1 className="text-2xl my-2">
-                  Samsung Galaxy S21 FE 8GB/128GB
-                </h1>
+                <h1 className="text-2xl my-2">{data?.name}</h1>
                 <div className="flex border-b items-center gap-3 py-3 pb-6">
                   <div className="flex items-center gapx-3 text-yellow-500">
                     {Array(5)
@@ -171,7 +171,7 @@ const ProductDetail = () => {
                   <span> Write a review</span>
                 </div>
                 <h3 className="text-red-500 text-3xl mt-5 font-semibold">
-                  $56.00
+                  {data?.price}
                 </h3>
                 <ul className="list-disc text-[13px] p-3 leading-7 text-gray-500">
                   <li>Screen Size 10.9 inch</li>
@@ -223,7 +223,27 @@ const ProductDetail = () => {
                     </span>
                   </div>
                   <div className="mt-2 flex gap-2">
-                    <label
+                    {data.sizes &&
+                      data?.sizes.map((item) => (
+                        <label
+                          key={item.id}
+                          htmlFor={item.name}
+                          className={`${
+                            size == item.name && "border-blue-500"
+                          } cursor-pointer p-2 border rounded-md inline-block`}
+                        >
+                          <input
+                            defaultValue={item.name}
+                            onChange={handleChangeSize}
+                            type="radio"
+                            name="size"
+                            className="hidden"
+                            id={item.name}
+                          />
+                          {item.name}
+                        </label>
+                      ))}
+                    {/* <label
                       htmlFor="128gb"
                       className={`${
                         size == "128gb" && "border-blue-500"
@@ -270,7 +290,7 @@ const ProductDetail = () => {
                         id="512gb"
                       />
                       512GB
-                    </label>
+                    </label> */}
                   </div>
                 </div>
                 <div className="text-gray-500 my-5">
@@ -281,7 +301,27 @@ const ProductDetail = () => {
                     </span>
                   </div>
                   <div className="mt-2 flex gap-2">
-                    <label
+                    {data.colors &&
+                      data?.colors.map((item) => (
+                        <label
+                          style={{ backgroundColor: item.color_code }}
+                          key={item.id}
+                          htmlFor={item.name}
+                          className={`${
+                            color == item.name && "border-blue-500"
+                          } cursor-pointer p-2 border rounded-full w-8 h-8 inline-block`}
+                        >
+                          <input
+                            defaultValue={item.name}
+                            onChange={handleChangeColor}
+                            type="radio"
+                            name="color"
+                            className="hidden"
+                            id={item.name}
+                          />
+                        </label>
+                      ))}
+                    {/* <label
                       htmlFor="white"
                       className={`${
                         color == "white" && "border-blue-500"
@@ -325,7 +365,7 @@ const ProductDetail = () => {
                         className="hidden"
                         id="purple"
                       />
-                    </label>
+                    </label> */}
                   </div>
                 </div>
                 <hr />

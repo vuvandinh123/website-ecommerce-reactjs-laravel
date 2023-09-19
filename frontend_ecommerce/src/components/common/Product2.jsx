@@ -1,6 +1,16 @@
 import { AiOutlineCheck } from "react-icons/ai";
+import PropTypes from "prop-types";
+import { AppURL } from "../../api/AppURL";
 
-const Product2 = () => {
+const Product2 = ({ data }) => {
+  const newCart = {
+    name: data.name,
+    price: data.price,
+    id: data.id,
+    image: data?.images[0].image_url,
+    slug: data.slug,
+  };
+
   return (
     <div className="flex bg-white justify-between p-5">
       <div className="flex  ">
@@ -8,7 +18,7 @@ const Product2 = () => {
           <a href="">
             <img
               className="w-[200px] group-hover:opacity-0 absolute transition-all duration-400"
-              src="https://demo-uminex.myshopify.com/cdn/shop/products/products_33_2.jpg?v=1678075353&width=360"
+              src={AppURL.ImageUrl + newCart.image}
               alt=""
             />
             <img
@@ -22,7 +32,7 @@ const Product2 = () => {
         <div className="mt-12">
           <h3 className="text-[#212529] font-semibold mb-2">
             <a href="" className="block">
-              Laptop Apple MacBook Pro M1 16GB/512GB
+              {newCart.name}
             </a>
           </h3>
           <div className="flex items-center gap-3">
@@ -54,7 +64,7 @@ const Product2 = () => {
         <p className="flex items-center gap-3 text-red-500">
           <AiOutlineCheck /> Out of Stock
         </p>
-        <h3 className="font-bold text-xl text-blue-600 mt-3">$848.00</h3>
+        <h3 className="font-bold text-xl text-blue-600 mt-3">${newCart.price}</h3>
         <button className="rounded-full px-20 py-3 mt-5 text-white bg-blue-500">
           Add to cart
         </button>
@@ -62,5 +72,8 @@ const Product2 = () => {
     </div>
   );
 };
-
+Product2.propTypes = {
+  deals: PropTypes.bool,
+  data: PropTypes.object,
+};
 export default Product2;

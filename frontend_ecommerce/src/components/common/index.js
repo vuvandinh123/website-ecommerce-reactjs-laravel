@@ -9,3 +9,4 @@ export {default as ImageLoader} from './ImageLoader';
 export {default as Title} from './Title';
 export {default as Product} from './Product';
 export {default as Accordion} from './Accordion';
+export {default as PlacehoderCard} from './PlacehoderCard';

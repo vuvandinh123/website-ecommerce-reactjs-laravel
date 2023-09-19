@@ -9,22 +9,64 @@ import { HiOutlineMenuAlt1, HiOutlineTag } from "react-icons/hi";
 import Cart from "./Cart";
 import { useOffcanvas } from "../../hooks/useOffcanvas";
 import Favourite from "./Favourite";
+import { productApi } from "../../api/productApi";
+import { AppURL } from "../../api/AppURL";
+import { Link, useNavigate } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
+import ImageLoader from "./ImageLoader";
+import lodash from "lodash";
+import { categoriesApi } from "../../api/categoriesApi";
+import {  useSelector } from "react-redux";
 const Header = () => {
   const { dropdow, setDropdow, dropdowRef } = useDropdown(false);
   const [scroll, setScroll] = useState(false);
   const [dropdowSub, setDropdowSub] = useState(false);
-
+  const [searchData, setSearchData] = useState([]);
   const menuRef = useRef(null);
   const barsRef = useRef(null);
   const cartRef = useRef(null);
   const favouriteRef = useRef(null);
   const favouriteIconRef = useRef(null);
   const cartIconRef = useRef(null);
-  const { isOpen: isOpenCart, setIsOpen: setIsOpenCart } = useOffcanvas(
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [noData, setNoData] = useState(false);
+  const [idCategory, setIdCategory] = useState("all");
+  const [categorySearch, setCategorySearch] = useState([]);
+  const navigate = useNavigate();
+  const { cartAr } = useSelector((state) => state.cart);
+  let totalCart = 0;
+  let qtyCart = 0;
+  cartAr.forEach((item) => {
+    totalCart += item.total
+    qtyCart += item.qty
+  })
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      setLoading(true);
+      const params = {
+        search: search,
+      };
+      const res1 = await productApi.search(idCategory, params);
+      const res2 = await categoriesApi.getAll();
+      setSearchData(res1.data);
+      setCategorySearch(res2.data);
+      setTimeout(() => {
+        setSearchData(res1.data);
+        setLoading(false);
+        setNoData(res1.data.length === 0);
+      }, 1000);
+    };
+    fetchApi();
+    return () => {};
+  }, [search, idCategory]);
+  const { isOpen: isOpenCart, setIsOpen: setIsOpenCart1 } = useOffcanvas(
     false,
     cartRef,
-    cartIconRef
-  );
+    cartIconRef,
+  ); 
+
   const { isOpen: isOpenFav, setIsOpen: setIsOpenFav } = useOffcanvas(
     false,
     favouriteRef,
@@ -35,9 +77,10 @@ const Header = () => {
     menuRef,
     barsRef
   );
+
   useEffect(() => {
     const scroll = window.addEventListener("scroll", () => {
-      if (window.scrollY > 200 ) {
+      if (window.scrollY > 200) {
         setScroll(true);
       } else {
         setScroll(false);
@@ -50,8 +93,32 @@ const Header = () => {
     };
   }, []);
   const handleClickDropdown = () => {
-    if (window.scrollY > 200 || !(window.location.pathname === '/')) {
+    if (window.scrollY > 200 || !(window.location.pathname === "/")) {
       setDropdow(!dropdow);
+    }
+  };
+  const {
+    dropdow: activeSearch,
+    setDropdow: setActiveSearch,
+    dropdowRef: searchRef,
+  } = useDropdown(false);
+  const handleFocusSearch = () => {
+    setActiveSearch(true);
+  };
+  const hanldeChangeSearch = lodash.debounce((e) => {
+    setSearch(e.target.value);
+  }, 300);
+  const handleSubmitSearch = (e) => {
+    e.preventDefault();
+    setActiveSearch(false);
+    if (searchRef.current) {
+      searchRef.current.blur();
+    }
+    if (idCategory == "all") {
+      navigate("/search?q=" + search);
+    } else {
+      let cat = categorySearch.find((item) => item.slug === idCategory);
+      navigate("/search?cat=" + cat.slug + "&q=" + search);
     }
   };
   const handleClickShowMenu = () => {
@@ -64,7 +131,8 @@ const Header = () => {
     setIsOpenMenu(false);
   };
   const handleClickShowCart = () => {
-    setIsOpenCart(!isOpenCart);
+    setIsOpenCart1(!isOpenCart);
+
   };
   const handleClickShowFav = () => {
     setIsOpenFav(!isOpenFav);
@@ -142,41 +210,107 @@ const Header = () => {
               alt=""
             />
           </div>
-          <div className="hidden lg:block w-full">
-            <div className="flex items-center w-full  justify-center">
-              <div className="border rounded-s-md border-[#e5e8ec] w-[60%] h-12 flex">
-                <select
-                  className="px-3 text-[#212529] hidden md:block bg-transparent  outline-0 w-[150px]"
-                  name=""
-                  id=""
-                >
-                  <option className="text-[#212529]" value="">
-                    All Categories
-                  </option>
-                  <option className="text-[#212529]" value="">
-                    All Categories
-                  </option>
-                  <option className="text-[#212529]" value="">
-                    All Categories
-                  </option>
-                  <option className="text-[#212529]" value="">
-                    All Categories
-                  </option>
-                  <option className="text-[#212529]" value="">
-                    All Categories
-                  </option>
-                </select>
-                <input
-                  type="text"
-                  defaultValue={""}
-                  placeholder="Search for products..."
-                  className="px-3 text-[14px] py-2 rounded-xl w-full  outline-0"
-                />
+          <div className="hidden lg:block w-full bg-white relative">
+            <form action="" onSubmit={handleSubmitSearch} method="get">
+              <div className="flex items-center w-full  justify-center">
+                <div className="border rounded-s-md border-[#e5e8ec] w-[60%] h-12 flex">
+                  <select
+                    className="px-3 text-[#212529] hidden md:block bg-transparent  outline-0 w-[150px]"
+                    name="category"
+                    id=""
+                    onChange={(e) => setIdCategory(e.target.value)}
+                  >
+                    <option className="text-[#212529]" value="all">
+                      All categories
+                    </option>
+                    {categorySearch.map((item) => (
+                      <option
+                        key={item.id}
+                        className="text-[#212529]"
+                        value={item.slug}
+                      >
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    onChange={hanldeChangeSearch}
+                    onFocus={handleFocusSearch}
+                    ref={searchRef}
+                    defaultValue={search}
+                    placeholder="Search for products..."
+                    className="px-3 text-[14px] py-2 rounded-xl w-full  outline-0"
+                  />
+                </div>
+                <button className="bg-[#2b38d1] text-white hover:bg-[#2b39d1bd] px-10 py-[13px] rounded-e-md">
+                  Search
+                </button>
               </div>
-              <button className="bg-[#2b38d1] text-white hover:bg-[#2b39d1bd] px-10 py-[13px] rounded-e-md">
-                Search
-              </button>
-            </div>
+            </form>
+
+            {search.length > 0 && activeSearch && (
+              <>
+                <div
+                  ref={dropdowRef}
+                  className="absolute border overflow-scroll max-h-[450px]  z-50 rounded-md  right-32 left-32  p-3 bg-white"
+                >
+                  {searchData?.length > 0 &&
+                    !noData &&
+                    !loading &&
+                    searchData?.map((item, index) => (
+                      <div key={index} className="flex border-b p-3 gap-2">
+                        <div className="relative">
+                          <Link to={`/products/${item.slug}`}>
+                            <ImageLoader
+                              className={"w-[60px] h-[60px]"}
+                              src={`${AppURL.ImageUrl}${
+                                item.images ? item?.images[0]?.image_url : ""
+                              }`}
+                            />
+                          </Link>
+                        </div>
+                        <div className="mt-2">
+                          <h4 className="text-[15px]">
+                            <Link
+                              to={`/products/${item.slug}`}
+                              className="hover:text-[#2b38d1] transition-all"
+                            >
+                              {item.name}
+                            </Link>
+                          </h4>
+                          <h5 className="text-red-500 mt-2 font-bold">
+                            ${item.price}
+                          </h5>
+                        </div>
+                      </div>
+                    ))}
+                  {loading &&
+                    Array(5)
+                      .fill(1)
+                      .map((item, index) => (
+                        <div key={index} className="flex border-b p-3 gap-2">
+                          <div className="relative">
+                            <Skeleton width={60} height={60} />
+                          </div>
+                          <div className="mt-2">
+                            <h4 className="text-[15px]">
+                              <Skeleton width={250} height={20} />
+                            </h4>
+                            <h5 className="text-red-500 mt-2 font-bold">
+                              <Skeleton width={100} height={20} />
+                            </h5>
+                          </div>
+                        </div>
+                      ))}
+                  {noData && (
+                    <p className="text-gray-400 text-center text-[17px]">
+                      No data found
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex">
@@ -193,7 +327,11 @@ const Header = () => {
                 </div>
               </a>
             </div>
-            <div onClick={handleClickShowFav} ref={favouriteIconRef} className="hidden lg:block lg:mr-7 shrink-0 ">
+            <div
+              onClick={handleClickShowFav}
+              ref={favouriteIconRef}
+              className="hidden lg:block lg:mr-7 shrink-0 "
+            >
               <a href="#" className="relative z-0 top-[6px]  ">
                 <img src={imageHeart} alt="" />
                 <span className="block -top-2 -right-3 w-5 leading-5 text-center text-white text-[10px] absolute h-5 rounded-full font-bold bg-red-600">
@@ -210,7 +348,7 @@ const Header = () => {
                 <div className="relative shrink-0 z-0 ">
                   <img src={imageCart} alt="" />
                   <span className="block -top-2 -right-3 w-5 leading-5 text-center text-white text-[10px] absolute h-5 rounded-full font-bold bg-red-600">
-                    1
+                    {qtyCart}
                   </span>
                 </div>
                 <div className="hidden lg:block">
@@ -218,7 +356,7 @@ const Header = () => {
                     Your Cart <HiOutlineTag className="inline" />
                   </p>
                   <p className="text-[#212529] font-bold text-[14px]">
-                    $430.00
+                    ${totalCart.toFixed(2)}
                   </p>
                 </div>
               </a>
@@ -491,12 +629,12 @@ const Header = () => {
                         </div>
                       </div>
                     </div>
-                    <a href="#" className="hover:text-[#2b38d1]">
+                    <Link to={'/'} className="hover:text-[#2b38d1]">
                       <li className="py-2  px-2 border-b-[1px] ">Home</li>
-                    </a>
-                    <a href="#" className="hover:text-[#2b38d1]">
+                    </Link>
+                    <Link to={'/'} href="#" className="hover:text-[#2b38d1]">
                       <li className="py-2  px-2 border-b-[1px] ">Home</li>
-                    </a>
+                    </Link>
                   </ul>
                 </div>
               </div>
@@ -536,18 +674,18 @@ const Header = () => {
                   </div>
                 </li>
                 <li className=" lg:py-0 py-5 border-b lg:border-b-0">
-                  <a className=" text-[#212529] hover:text-[#2b38d1]" href="">
+                  <Link to={'/'} className=" text-[#212529] hover:text-[#2b38d1]" href="">
                     Home{" "}
-                  </a>
+                  </Link>
                 </li>
                 <li className=" lg:py-0 relative py-5 border-b lg:border-b-0">
                   <div className="flex justify-between items-center">
-                    <a
+                    <Link to={'/categories/all'}
                       className="block w-4/5 text-[#212529] hover:text-[#2b38d1]"
                       href=""
                     >
                       Shop{" "}
-                    </a>
+                    </Link>
                     <i
                       onClick={handleClickDropdownSubmenu}
                       className="fa-solid w-[20%] fa-chevron-down text-end mr-2 text-[12px]"
@@ -611,8 +749,12 @@ const Header = () => {
           </div>
         </div>
         <hr />
-        <Cart cart={isOpenCart} setCart={setIsOpenCart} cartRef={cartRef} />
-        <Favourite isOpen={isOpenFav} setIsOpen={setIsOpenFav} favRef={favouriteRef}/>
+        <Cart cart={isOpenCart}  setCart={setIsOpenCart1} cartRef={cartRef} />
+        <Favourite
+          isOpen={isOpenFav}
+          setIsOpen={setIsOpenFav}
+          favRef={favouriteRef}
+        />
       </header>
     </>
   );

@@ -3,6 +3,7 @@ import { ImageLoader, Sidebar } from "../../components/common";
 import Slider from "react-slick";
 import { FeaturedProducts, Hotdeals, News, Recomended } from "../../components/home";
 import TopSellingProducts from "../../components/home/TopSellingProducts";
+import { useProductApi } from "../../hooks/hooksApi/useProductApi";
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderList = [
@@ -119,6 +120,7 @@ const HomePage = () => {
   const handleClickPrev = () => {
     arrowsRef.current.slickPrev();
   };
+
   return (
     <div className="bg-[#F1F5F6]">
       <div className="max-w-[1410px] relative px-5 py-5 mx-auto ">

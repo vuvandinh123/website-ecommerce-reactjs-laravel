@@ -2,18 +2,28 @@ import { FiLayers } from "react-icons/fi";
 import { AiOutlineCheck, AiOutlineEye, AiOutlineHeart } from "react-icons/ai";
 import { ImageLoader, Title } from "../common";
 import PropTypes from "prop-types";
+import {AppURL} from "../../api/AppURL.js";
 import { Link } from "react-router-dom";
-const Product = ({ deals }) => {
+import { useDispatch } from 'react-redux';
+import { byToCart, setIsOpenCart } from "../../redux/cartSlice";
+
+const Product = ({ deals,data }) => {
+  const dispatch = useDispatch();
+  const handleClickToCart = () => {
+    const newCart = {name:data.name,price:data.price,id:data.id,image:data?.images[0].image_url,slug:data.slug};
+    dispatch(byToCart(newCart));
+    dispatch(setIsOpenCart(true));
+  }
   return (
     <div className="">
-      <div className="mx-1 group rounded-md overflow-hidden relative  bg-white p-[20px]">
+      <div className="mx-1 flex h-full flex-col justify-between  group rounded-md overflow-hidden relative  bg-white p-[20px]">
         <div className="">
-          <div className="cursor-pointer relative min-h-[130px]">
-            <Link to={"/products/1"}>
+          <div className="cursor-pointer relative min-h-[140px]">
+            <Link to={`/products/${data?.slug}`}>
               <ImageLoader
-                src="https://demo-uminex.myshopify.com/cdn/shop/products/products_12_2.jpg?v=1672302207&width=360"
+                src={AppURL.ImageUrl + data?.images[0]?.image_url}
                 className={
-                  "lg:group-hover:hidden  lg:group-hover:scale-105 transition-all duration-300"
+                  "lg:group-hover:hidden h-full   lg:group-hover:scale-105 transition-all duration-300"
                 }
               />
               <img
@@ -42,9 +52,9 @@ const Product = ({ deals }) => {
           </div>
         </div>
         <div className=" relative lg:group-hover:-mt-12 lg:group-hover:pb-12 pb-0 transition-all duration-500 mt-0 z-20 py-3 bg-white">
-          <h3 className="text-[15px] leading-[1.2em] max-h-[2.4em] text-clip overflow-hidden ...">
+          <h3  className="text-[15px] text-ellipsis h-10 w-full line-clamp-2 leading-[1.2em] max-h-[2.4em]  overflow-hidden ">
             <Link to="products/1" className=" ">
-              Laptop Apple MacBook Pro M1 16GB/512GB
+                {data?.name}
             </Link>
           </h3>
           <div className="flex items-center mt-2 gap-2">
@@ -66,7 +76,7 @@ const Product = ({ deals }) => {
             <span className="text-gray-400 text-[12px]">(1 review)</span>
           </div>
           <div className="flex items-center gap-3">
-            <h4 className="text-[#3741ff] font-bold text-base mt-1">$230.00</h4>
+            <h4 className="text-[#3741ff] font-bold text-base mt-1">${data?.price}</h4>
             <span className="text-gray-300 font-thin text-xs mt-1 line-through">
               $300.00
             </span>
@@ -85,7 +95,7 @@ const Product = ({ deals }) => {
               <span className="text-black ms-2"> 3 Products</span>
             </div>
           </div>
-          <button className="bg-[#2b38d1] absolute mt-5 text-white py-2 px-5 w-full lg:py-2 lg:px-8 rounded-full transition-all">
+          <button onClick={handleClickToCart} className="bg-[#2b38d1] absolute mt-5 text-white py-2 px-5 w-full lg:py-2 lg:px-8 rounded-full transition-all">
             Add To Cart
           </button>
         </div>
@@ -96,5 +106,6 @@ const Product = ({ deals }) => {
 
 Product.propTypes = {
   deals: PropTypes.bool,
+  data: PropTypes.object
 };
 export default Product;

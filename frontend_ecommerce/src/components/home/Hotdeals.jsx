@@ -2,9 +2,11 @@ import hotdeals from "../../../public/svg/hotdel.svg";
 import { Product } from "../common";
 import { useCountDown } from "../../hooks";
 import SlickCround from "../common/SlickCround";
+import { useProductApi } from "../../hooks/hooksApi/useProductApi";
 
 const Hotdeals = () => {
   const products = Array(10).fill(null);
+  const {data} = useProductApi();
   const settings = {
     dots: false,
     infinite: false,
@@ -98,8 +100,8 @@ const Hotdeals = () => {
         </div>
         <div className="lg:basis-2/3 max-w-[100%]  lg:max-w-[900px] relative group/arrow">
           <SlickCround settings={settings}>
-            {products.map((item, index) => {
-              return <Product key={index} deals={true} />;
+            {data?.map((item, index) => {
+              return <Product data={item} key={index} deals={true} />;
             })}
           </SlickCround>
         </div>
