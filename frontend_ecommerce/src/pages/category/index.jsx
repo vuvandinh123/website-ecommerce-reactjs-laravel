@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { categoriesApi } from "../../api/categoriesApi";
+import { AppURL } from "../../api/AppURL";
 
 const CategoryPage = () => {
   const [data, setData] = useState([]);
@@ -33,16 +34,19 @@ const CategoryPage = () => {
             data.map((item, index) => (
               <div key={index} className="lg:w-1/4  md:w-1/3 sm:w-1/2 w-full ">
                 <div className="bg-white relative m-1 p-5 rounded-md ">
-                  <div className="  z-30 group relative ">
-                    <img
-                      className="group-hover:scale-105 z-10 relative  transition-all duration-500 w-full"
-                      src="https://demo-uminex.myshopify.com/cdn/shop/products/products_34_1_360x.jpg?v=1678075515"
-                      alt=""
-                    />
+                  <div className="h-[290px]  z-30 group relative ">
+                    <Link to={`/categories/${item.slug}`}>
+                      <img
+                      width={"290px"}
+                        className="group-hover:scale-105 z-10 relative h-full  transition-all duration-500 w-full"
+                        src={AppURL.ImageUrl + item.image}
+                        alt=""
+                      />
+                    </Link>
                   </div>
                   <div>
                     <h2 className="text-center my-2 uppercase">
-                      {item.name}
+                      <Link to={`categories/${item.slug}`}>{item.name}</Link>
                     </h2>
                     <p className="text-gray-500 text-center text-[12px]">
                       <span>14</span> Products

@@ -1,23 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Accordion } from "../../components/common";
 import { colorApi } from "../../api/colorApi";
 import { sizeApi } from "../../api/sizeApi";
 import PropTypes from "prop-types";
 import { AiOutlineClose } from "react-icons/ai";
 import { BiTrash } from "react-icons/bi";
-import { brandApi } from "../../api/brand.Api";
+import { brandApi } from "../../api/brandApi";
+import { useApiCall } from "../../hooks";
+import { useParams } from "react-router-dom";
 
 const Filter = (props) => {
   const { filter, setFilter, price, setPrice } = props;
-  const [colors, setColors] = useState([]);
-  const [sizes, setSizes] = useState([]);
-  const [brands, setBrands] = useState([]);
   const minPriceRef = useRef(null);
   const maxPriceRef = useRef(null);
   const colorRef = useRef(null);
-
+  const { slug } = useParams();
   const handleCheckboxChange = (event) => {
-    const value = Number(event.target.value);
+    const value = event.target.value;
     const name = event.target.name;
     const isChecked = event.target.checked;
     props.handleCheckboxChange(value, isChecked, name);
@@ -28,18 +27,18 @@ const Filter = (props) => {
       max: maxPriceRef.current.value,
     });
   };
-  useEffect(() => {
-    const fetchApi = async () => {
-      const res1 = await colorApi.getAll();
-      const res2 = await sizeApi.getAll();
-      const res3 = await brandApi.getAll();
-      setColors(res1.data);
-      setSizes(res2.data);
-      setBrands(res3.data);
-    };
-    fetchApi();
-  }, []);
-
+  const { data: brandList } = useApiCall(async () => {
+    return await brandApi.getAll(slug || "");
+  }, [slug]);
+  const { data: colorList } = useApiCall(async () => {
+    return await colorApi.getAll();
+  });
+  const { data: sizeList } = useApiCall(async () => {
+    return await sizeApi.getAll();
+  });
+  const brands = brandList?.data || [];
+  const colors = colorList?.data || [];
+  const sizes = sizeList?.data || [];
   return (
     <>
       <div className="border-b pb-5 mt-5">
@@ -77,11 +76,11 @@ const Filter = (props) => {
         <div className="flex items-center gap-1 mt-2 flex-wrap">
           {filter.brand.length > 0 &&
             filter.brand.map((item, index) => {
-              const mach = brands.find((item2) => item2.id === item);
+              const mach = brands.find((item2) => item2.id == item);
               return (
                 <div key={index}>
                   <span className="px-2 text-[13px] py-1 pr-0 my-1 bg-slate-100 inline-block ms-1  rounded-sm">
-                    Brand: {mach.name}
+                    Brand: {mach?.name}
                     <span
                       onClick={() => {
                         document.querySelectorAll(".brand").forEach((it) => {
@@ -140,11 +139,11 @@ const Filter = (props) => {
           )}
           {filter.color.length > 0 &&
             filter.color.map((item, index) => {
-              const mach = colors.find((item2) => item2.id === item);
+              const mach = colors.find((item2) => item2.id == item);
               return (
                 <div key={index}>
                   <span className="px-2 text-[13px] py-1 pr-0 my-1 bg-slate-100 inline-block ms-1  rounded-sm">
-                    Color: {mach.name}
+                    Color: {mach?.name}
                     <span
                       onClick={() => {
                         document.querySelectorAll(".color").forEach((it) => {
@@ -171,7 +170,7 @@ const Filter = (props) => {
             })}
           {filter.size.length > 0 &&
             filter.size.map((item, index) => {
-              const mach = sizes.find((item2) => item2.id === item);
+              const mach = sizes.find((item2) => item2.id == item);
               return (
                 <div className="flex items-center " key={index}>
                   <span className="px-2 text-[13px] py-1 my-1 bg-slate-100 inline-block ms-1  rounded-sm">
@@ -236,70 +235,11 @@ const Filter = (props) => {
           </div>
         </Accordion>
       </div>
-      <div className="border-b pb-5 mt-5">
-        <Accordion title="brand">
-          <div className="mt-5">
-            {brands.map((item) => (
-              <label
-                key={item.id}
-                htmlFor={item.name}
-                className="flex justify-between mb-2 cursor-pointer"
-              >
-                <div className="flex gap-3 items-center">
-                  <input
-                    type="checkbox"
-                    value={item.id}
-                    onChange={handleCheckboxChange}
-                    name="brand"
-                    className="brand"
-                    id={item.name}
-                  />
-                  <span className="text-gray-500 pt-[2px]">
-                    {item.name} (7)
-                  </span>
-                </div>
-              </label>
-            ))}
-          </div>
-        </Accordion>
-      </div>
-      <div className="border-b pb-5 mt-5">
-        <Accordion title="color">
-          <div className="mt-5">
-            {colors.map((item) => (
-              <label
-                key={item.id}
-                htmlFor={item.name}
-                className="flex justify-between mb-2 cursor-pointer"
-              >
-                <div className="flex gap-3 items-center">
-                  <input
-                    ref={colorRef}
-                    type="checkbox"
-                    value={item.id}
-                    onChange={handleCheckboxChange}
-                    name="color"
-                    className="color"
-                    id={item.name}
-                  />
-                  <span className="text-gray-500 pt-[2px]">
-                    {item.name} ({item.product_count})
-                  </span>
-                </div>
-                <span
-                  style={{ background: item.color_code }}
-                  className={`w-4 h-4 block rounded-full`}
-                ></span>
-              </label>
-            ))}
-          </div>
-        </Accordion>
-      </div>
-      <div className="border-b pb-5 mt-5">
-        <Accordion title="SIZE">
-          <div className="mt-5">
-            <form action="" method="post">
-              {sizes.map((item) => (
+      {brands.length > 0 && (
+        <div className="border-b pb-5 mt-5">
+          <Accordion title="brand">
+            <div className="mt-5">
+              {brands.map((item) => (
                 <label
                   key={item.id}
                   htmlFor={item.name}
@@ -307,27 +247,95 @@ const Filter = (props) => {
                 >
                   <div className="flex gap-3 items-center">
                     <input
-                      onChange={handleCheckboxChange}
                       type="checkbox"
+                      checked={filter.brand.includes("" + item.id)}
                       value={item.id}
-                      className="size"
-                      name="size"
+                      onChange={handleCheckboxChange}
+                      name="brand"
+                      className="brand"
                       id={item.name}
                     />
                     <span className="text-gray-500 pt-[2px]">
-                      {item.name} (1)
+                      {item.name} ({item.product_count})
+                    </span>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </Accordion>
+        </div>
+      )}
+      {colors.length > 0 && (
+        <div className="border-b pb-5 mt-5">
+          <Accordion title="color">
+            <div className="mt-5">
+              {colors.map((item) => (
+                <label
+                  key={item.id}
+                  htmlFor={item.name}
+                  className="flex justify-between mb-2 cursor-pointer"
+                >
+                  <div className="flex gap-3 items-center">
+                    <input
+                      ref={colorRef}
+                      checked={filter.color.includes("" + item.id)}
+                      type="checkbox"
+                      value={item.id}
+                      onChange={handleCheckboxChange}
+                      name="color"
+                      className="color"
+                      id={item.name}
+                    />
+                    <span className="text-gray-500 pt-[2px]">
+                      {item.name} ({item.product_count})
                     </span>
                   </div>
                   <span
-                    style={{ background: item.name }}
-                    className={`rounded-full w-6 h-6 block`}
+                    style={{ background: item.color_code }}
+                    className={`w-4 h-4 block rounded-full`}
                   ></span>
                 </label>
               ))}
-            </form>
-          </div>
-        </Accordion>
-      </div>
+            </div>
+          </Accordion>
+        </div>
+      )}
+      {sizes.length > 0 && (
+        <div className="border-b pb-5 mt-5">
+          <Accordion title="SIZE">
+            <div className="mt-5">
+              <form action="" method="post">
+                {sizes.map((item) => (
+                  <label
+                    key={item.id}
+                    htmlFor={item.name}
+                    className="flex justify-between mb-2 cursor-pointer"
+                  >
+                    <div className="flex gap-3 items-center">
+                      <input
+                        onChange={handleCheckboxChange}
+                        type="checkbox"
+                        checked={filter.size.includes("" + item.id)}
+                        value={item.id}
+                        className="size"
+                        name="size"
+                        id={item.name}
+                      />
+                      <span className="text-gray-500 pt-[2px]">
+                        {item.name} ({item.product_count})
+                      </span>
+                    </div>
+                    <span
+                      style={{ background: item.name }}
+                      className={`rounded-full w-6 h-6 block`}
+                    ></span>
+                  </label>
+                ))}
+              </form>
+            </div>
+          </Accordion>
+        </div>
+      )}
       <div className="border-b pb-5 mt-5">
         <Accordion title="AVAILABILITY">
           <div className="mt-5">

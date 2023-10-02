@@ -33,7 +33,7 @@
                             <div class="col-md-12">
                                 <label for="" class="form-label my-2">Description <span
                                         class="text-danger">*</span></label>
-                                <textarea placeholder="" style="min-height: 40px" class="form-control" name="des" id="detail" cols="30"
+                                <textarea placeholder="" style="min-height: 40px" class="form-control" name="description" id="detail" cols="30"
                                     rows="3"></textarea>
                                 <span class="text-danger alert" style="font-size: 12px"></span>
                             </div>

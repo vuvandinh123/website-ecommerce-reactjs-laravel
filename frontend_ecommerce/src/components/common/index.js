@@ -10,3 +10,4 @@ export {default as Title} from './Title';
 export {default as Product} from './Product';
 export {default as Accordion} from './Accordion';
 export {default as PlacehoderCard} from './PlacehoderCard';
+export {default as Loader} from './Loader';

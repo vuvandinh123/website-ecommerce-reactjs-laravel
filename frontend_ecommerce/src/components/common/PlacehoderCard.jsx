@@ -5,7 +5,7 @@ const PlacehoderCard = () => {
     <div className="">
       <div className="mx-1 flex h-full flex-col justify-between  group rounded-md overflow-hidden relative  bg-white p-[20px]">
         <div className="">
-          <div className="cursor-wait relative min-h-[140px]">
+          <div className="cursor-wait relative min-h-[170px]">
             <Skeleton className="" height={"170px"} />
           </div>
         </div>
@@ -17,8 +17,7 @@ const PlacehoderCard = () => {
             <Skeleton className="" height={"10px"} width={"30%"} />
           </div>
           <div className="gap-3">
-            <h4 className="text-[#3741ff] font-bold text-base mt-1">
-            </h4>
+            <h4 className="text-[#3741ff] font-bold text-base mt-1"></h4>
           </div>
           <div>
             <p className="text-gray-500 mt-3">

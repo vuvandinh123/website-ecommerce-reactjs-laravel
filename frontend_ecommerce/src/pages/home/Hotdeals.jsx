@@ -1,19 +1,26 @@
 import hotdeals from "../../../public/svg/hotdel.svg";
-import { Product } from "../common";
-import { useCountDown } from "../../hooks";
-import SlickCround from "../common/SlickCround";
-import { useProductApi } from "../../hooks/hooksApi/useProductApi";
+import { Loader, PlacehoderCard, Product } from "../../components/common";
+import { useApiCall } from "../../hooks";
+import SlickCround from "../../components/common/SlickCround";
+import CountDown from "./CountDown";
+import { productDiscountApi } from "../../api/productDiscountApi";
 
 const Hotdeals = () => {
-  const products = Array(10).fill(null);
-  const {data} = useProductApi();
+  const { data, loading } = useApiCall(
+    async () => {
+      return await productDiscountApi.getAll();
+    },
+    [],
+    []
+  );
+  const listProduct = data?.data?.data || [];
   const settings = {
     dots: false,
     infinite: false,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
-    responsive: [ 
+    responsive: [
       {
         breakpoint: 1280,
         settings: {
@@ -52,10 +59,10 @@ const Hotdeals = () => {
       },
     ],
   };
-  const timeCountDown = new Date("2023-10-28T00:00:00").getTime();
-  const { time } = useCountDown(timeCountDown);
+
   return (
     <div className="my-20">
+      {!loading && <Loader />}
       <div className=" bg-white rounded-md p-4 flex justify-between flex-wrap gap-y-4 items-center">
         <div className="flex items-center">
           <img src={hotdeals} className="me-2" alt="" />
@@ -71,20 +78,7 @@ const Hotdeals = () => {
             <span className="me-3 text-[12px] lg:text-[14px]  text-[#424242]">
               Hurry up! Offer ends in:
             </span>
-            <div>
-              <span className="px-3 me-1 py-2 bg-red-600 font-bold rounded-sm text-white">
-                {time.days}
-              </span>
-              <span className="px-3 me-1 py-2 bg-red-600 font-bold rounded-sm text-white">
-                {time.hours}
-              </span>
-              <span className="px-3 me-1 py-2 bg-red-600 font-bold rounded-sm text-white">
-                {time.minutes}
-              </span>
-              <span className="px-3 py-2 bg-red-600 font-bold rounded-sm text-white">
-                {time.seconds}
-              </span>
-            </div>
+            <CountDown />
           </div>
         </div>
       </div>
@@ -100,9 +94,14 @@ const Hotdeals = () => {
         </div>
         <div className="lg:basis-2/3 max-w-[100%]  lg:max-w-[900px] relative group/arrow">
           <SlickCround settings={settings}>
-            {data?.map((item, index) => {
-              return <Product data={item} key={index} deals={true} />;
-            })}
+            {!loading
+              ? listProduct.length > 0 &&
+                listProduct?.map((item, index) => {
+                  return <Product data={item} key={index} deals={true} />;
+                })
+              : Array(4)
+                  .fill(null)
+                  .map((item, index) => <PlacehoderCard key={index} />)}
           </SlickCround>
         </div>
       </div>

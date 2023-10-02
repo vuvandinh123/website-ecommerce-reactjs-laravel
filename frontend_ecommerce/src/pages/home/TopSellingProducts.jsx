@@ -1,7 +1,7 @@
 import { AiOutlineCheck, AiOutlineEye, AiOutlineHeart } from "react-icons/ai";
 import { FiLayers } from "react-icons/fi";
-import { ImageLoader, Title } from "../common";
-import SlickCround from "../common/SlickCround";
+import { ImageLoader, Title } from "../../components/common";
+import SlickCround from "../../components/common/SlickCround";
 const TopSellingProducts = () => {
 
   const settings = {

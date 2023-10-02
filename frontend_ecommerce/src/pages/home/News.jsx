@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import Slider from "react-slick";
-import { ImageLoader } from "../common";
+import { ImageLoader } from "../../components/common";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 
 const News = () => {

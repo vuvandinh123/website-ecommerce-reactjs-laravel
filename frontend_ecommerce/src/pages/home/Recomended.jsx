@@ -1,18 +1,20 @@
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
-import { Product } from "../common";
-import SlickCround from "../common/SlickCround";
-const FeaturedProducts = () => {
+import { Product } from "../../components/common";
+import SlickCround from "../../components/common/SlickCround";
+import { productApi } from "../../api/productApi";
+import { useApiCall } from "../../hooks";
+const Recomended = () => {
   const settings = {
     dots: false,
     infinite: false,
     speed: 500,
-    slidesToShow: 5,
+    slidesToShow: 6,
     slidesToScroll: 1,
     responsive: [
       {
         breakpoint: 1280,
         settings: {
-          slidesToShow: 3,
+          slidesToShow: 5,
           slidesToScroll: 1,
           infinite: false,
           dots: false,
@@ -21,7 +23,7 @@ const FeaturedProducts = () => {
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 3,
+          slidesToShow: 4,
           slidesToScroll: 1,
           infinite: false,
           dots: false,
@@ -47,12 +49,21 @@ const FeaturedProducts = () => {
       },
     ],
   };
-
+  const { data } = useApiCall(
+    async () => {
+      return await productApi.getAll();
+    },
+    [],
+    []
+  );
+  const listProduct = data?.data?.data.data || [];
   return (
-    <div>
+    <div className="my-10">
       <div className=" bg-white rounded-md p-4 flex justify-between flex-wrap gap-y-4 items-center">
         <div className="flex items-center">
-          <h5 className="uppercase font-bold text-[16px]">Feature Products</h5>
+          <h5 className="uppercase font-bold text-[16px]">
+            Recomended for you
+          </h5>
         </div>
         <div>
           <div className="text-sm leading-4 flex items-center justify-between">
@@ -66,18 +77,15 @@ const FeaturedProducts = () => {
           </div>
         </div>
       </div>
-      <div className=" max-w-[100%] relative group/arrow mt-5">
-        {/*  */}
+      <div className=" max-w-[100%] relative group/arrow mt-2">
         <SlickCround settings={settings}>
-          {Array(10)
-            .fill(null)
-            .map((item, index) => {
-              return <Product key={index} deals={false} />;
-            })}
+          {listProduct.map((item, index) => {
+            return <Product data={item} key={index} deals={false} />;
+          })}
         </SlickCround>
       </div>
     </div>
   );
 };
 
-export default FeaturedProducts;
+export default Recomended;

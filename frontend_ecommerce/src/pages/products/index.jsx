@@ -1,33 +1,60 @@
-import { Accordion, PlacehoderCard } from "../../components/common";
+import { Accordion } from "../../components/common";
 import { useEffect, useState } from "react";
 import { productApi } from "../../api/productApi";
 import CategoriesSiderbar from "./CategoriesSiderbar";
 import { useNavigate, useParams } from "react-router-dom";
 import Filter from "./Filter";
 import LayoutProduct from "../../components/common/LayoutProduct";
+import { useApiCall } from "../../hooks";
 const Products = () => {
-  const [data, setData] = useState([]);
+  const [sortBy, setSortBy] = useState("featured");
   const searchParams = new URLSearchParams(window.location.search);
+
+  const size = searchParams.get("size")?.split(",") || [];
+  const brand = searchParams.get("brand")?.split(",") || [];
+  const color = searchParams.get("color")?.split(",") || [];
+  const [params, setParams] = useState({
+    brand: brand,
+    color: color,
+    size: size,
+    sortBy: "featured",
+    price: { min: null, max: null },
+  });
+  // console.log(window.location);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const queryParams = new URLSearchParams();
+    if (params.brand.length > 0) {
+      queryParams.append("brand", params.brand.join(","));
+    }
+    if (params.color.length > 0) {
+      queryParams.append("color", params.color.join(","));
+    }
+    if (params.size.length > 0) {
+      queryParams.append("size", params.size.join(","));
+    }
+    if (params.sortBy.length > 0) {
+      queryParams.append("sortBy", params.sortBy);
+    }
+    navigate(`?${queryParams.toString()}`);
+  }, [params, navigate]);
   const limi = searchParams.get("limit");
   const [limit, setLimit] = useState(Number(limi) || 5);
-  const [totalProduct, setTotalProduct] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
-  const navigate = useNavigate();
   const [price, setPrice] = useState({
     min: null,
     max: null,
   });
-  const [filter, setFilter] = useState({
-    size: [],
-    color: [],
-    brand: [],
-  });
 
   const { slug } = useParams();
+  // useEffect(() => {
+  //   if(size.length > 0){
+  //     setFilter({...filter, size})
+  //   }
+
+  // },[size,filter])
   const handleCheckboxChange = (value, isChecked, name) => {
     if (name == "size") {
-      setFilter((item) => {
+      setParams((item) => {
         if (isChecked) {
           if (!item.size.includes(value)) {
             return {
@@ -44,7 +71,7 @@ const Products = () => {
         return item;
       });
     } else if (name == "color") {
-      setFilter((item) => {
+      setParams((item) => {
         if (isChecked) {
           if (!item.color.includes(value)) {
             return {
@@ -61,7 +88,7 @@ const Products = () => {
         return item;
       });
     } else if (name == "brand") {
-      setFilter((item) => {
+      setParams((item) => {
         if (isChecked) {
           if (!item.brand.includes(value)) {
             return {
@@ -79,39 +106,117 @@ const Products = () => {
       });
     }
   };
-  useEffect(() => {
-    const params = {
-      size: JSON.stringify(filter.size),
-      color: JSON.stringify(filter.color),
+  // const handleCheckboxChange = (value, isChecked, name) => {
+  //   if (name == "size") {
+  //     setFilter((item) => {
+  //       if (isChecked) {
+  //         if (!item.size.includes(value)) {
+  //           return {
+  //             ...item,
+  //             size: [...item.size, value],
+  //           };
+  //         }
+  //       } else {
+  //         return {
+  //           ...item,
+  //           size: item.size.filter((item) => item !== value),
+  //         };
+  //       }
+  //       return item;
+  //     });
+  //   } else if (name == "color") {
+  //     setFilter((item) => {
+  //       if (isChecked) {
+  //         if (!item.color.includes(value)) {
+  //           return {
+  //             ...item,
+  //             color: [...item.color, value],
+  //           };
+  //         }
+  //       } else {
+  //         return {
+  //           ...item,
+  //           color: item.color.filter((item) => item !== value),
+  //         };
+  //       }
+  //       return item;
+  //     });
+  //   } else if (name == "brand") {
+  //     setFilter((item) => {
+  //       if (isChecked) {
+  //         if (!item.brand.includes(value)) {
+  //           return {
+  //             ...item,
+  //             brand: [...item.brand, value],
+  //           };
+  //         }
+  //       } else {
+  //         return {
+  //           ...item,
+  //           brand: item.brand.filter((item) => item !== value),
+  //         };
+  //       }
+  //       return item;
+  //     });
+  //   }
+  // };
+  const { data, progress, loading } = useApiCall(async () => {
+    return await productApi.getAll({
+      size: JSON.stringify(params.size),
+      color: JSON.stringify(params.color),
       min: price.min,
       max: price.max,
       page: 1,
       limit: limit,
       category: slug,
-      brand: JSON.stringify(filter.brand),
-    };
-    setLoading(true);
-    setProgress(0);
-    const fetchApi = async () => {
-      const res = await productApi.getAll(params);
-      setData(res.data.data.data);
-      for (let i = 0; i <= 100; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 10));
-        setProgress(i);
-      }
-      setTotalProduct(res.data.data.total);
-      setLoading(false);
-    };
-    fetchApi();
+      sortBy: sortBy,
+      brand: JSON.stringify(params.brand),
+    });
   }, [
-    filter.size,
-    filter.color,
+    params.color,
+    params.size,
     slug,
     price.min,
     price.max,
-    filter.brand,
+    params.brand,
     limit,
+    sortBy,
   ]);
+  const listProduct = data?.data?.data.data || [];
+  const totalProduct = data?.data?.data.total || 0;
+  // useEffect(() => {
+  //   const params = {
+  //     size: JSON.stringify(filter.size),
+  //     color: JSON.stringify(filter.color),
+  //     min: price.min,
+  //     max: price.max,
+  //     page: 1,
+  //     limit: limit,
+  //     category: slug,
+  //     brand: JSON.stringify(filter.brand),
+  //   };
+  //   setLoading(true);
+  //   setProgress(0);
+  //   const fetchApi = async () => {
+  //     const res = await productApi.getAll(params);
+  //     setData(res.data.data.data);
+  //     for (let i = 0; i <= 100; i++) {
+  //       await new Promise((resolve) => setTimeout(resolve, 10));
+  //       setProgress(i);
+  //     }
+  //     setTotalProduct(res.data.data.total);
+  //     setLoading(false);
+  //   };
+  //   fetchApi();
+  // }, [
+  //   filter.size,
+  //   filter.color,
+  //   slug,
+  //   price.min,
+  //   price.max,
+  //   filter.brand,
+  //   limit,
+  // ]);
 
   return (
     <div className="bg-[#F1F5F6]">
@@ -137,10 +242,11 @@ const Products = () => {
             </div>
             <Filter
               handleCheckboxChange={handleCheckboxChange}
-              filter={filter}
+              filter={params}
               price={price}
+              params={params}
               setPrice={setPrice}
-              setFilter={setFilter}
+              setFilter={setParams}
             />
             <div className="border-b pb-5 mt-5">
               <Accordion title="FEATURED PRODUCT">
@@ -209,20 +315,28 @@ const Products = () => {
             </div>
           </div>
           <div className="lg:basis-4/5">
-            <LayoutProduct progress={progress} loading={loading} data={data} />
+            <LayoutProduct
+              setSortBy={setSortBy}
+              sortBy={sortBy}
+              setParams={setParams}
+              params={params}
+              progress={progress}
+              loading={loading}
+              data={listProduct}
+            />
             <div
               onClick={() => {
-                if (data.length < totalProduct) {
-                  setLimit(limit + 1);
-                  const params = "?limit=" + (limit + 1);
+                if (listProduct.length < totalProduct) {
+                  setLimit(limit + 5);
+                  const params = "?limit=" + (limit + 5);
                   navigate(params);
                 }
               }}
               className="flex items-center justify-center mt-10"
             >
-              {data.length < totalProduct && (
+              {listProduct.length < totalProduct && (
                 <button className="px-10 py-3 hover:shadow-md hover:bg-blue-500 transition-all duration-200 hover:text-white border-2  rounded-md bg-slate-200  ">
-                  Load more ({totalProduct - data.length}) products
+                  Load more ({totalProduct - listProduct.length}) products
                 </button>
               )}
             </div>

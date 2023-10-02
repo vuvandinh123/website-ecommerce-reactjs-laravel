@@ -1,9 +1,11 @@
 import { useRef, useState } from "react";
 import { ImageLoader, Sidebar } from "../../components/common";
 import Slider from "react-slick";
-import { FeaturedProducts, Hotdeals, News, Recomended } from "../../components/home";
-import TopSellingProducts from "../../components/home/TopSellingProducts";
-import { useProductApi } from "../../hooks/hooksApi/useProductApi";
+import Hotdeals from "./Hotdeals";
+import Recomended from "./Recomended";
+import TopSellingProducts from "./TopSellingProducts";
+import FeaturedProducts from "./FeaturedProducts";
+import News from "./News";
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderList = [
@@ -113,6 +115,7 @@ const HomePage = () => {
       },
     ],
   };
+  
   const arrowsRef = useRef(null);
   const handleClickNext = () => {
     arrowsRef.current.slickNext();
@@ -294,7 +297,6 @@ const HomePage = () => {
           </div>
         </div>
         <TopSellingProducts />
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-10 ">
           <div className="w-full group overflow-hidden rounded-md relative">
             <a href="">

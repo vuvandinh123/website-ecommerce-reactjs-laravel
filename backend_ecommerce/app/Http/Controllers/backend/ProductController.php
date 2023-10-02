@@ -9,7 +9,8 @@ use App\Models\Color;
 use App\Models\Image;
 use App\Models\Product;
 use App\Models\Product_color;
-use App\Models\Product_Size;
+use App\Models\Product_size;
+use App\Models\Products_sizes;
 use App\Models\Size;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -57,6 +58,7 @@ class ProductController extends Controller
         $product->brand_id = $request->input('brand');
         $product->price = $request->input('price');
         $product->quantity = $request->input('qty');
+        $product->description = $request->input('description');
         $product->detail = $request->input('detail');
         $product->metakey = $request->input('metakey');
         $product->metadesc = $request->input('metades');
@@ -78,12 +80,12 @@ class ProductController extends Controller
             }
             if ($request->has('sizes')) {
                 foreach ($request->input('sizes') as $id) {
-                    $color = new Product_Size();
-                    $color->product_id = $product->id;
-                    $color->size_id = $id;
-                    $color->quantity = $request->input($id . 'sizeqty') ?? 0;
-                    $color->price = $request->input($id . 'sizeprice') ?? $product->price;
-                    $color->save();
+                    $size = new Product_size();
+                    $size->product_id = $product->id;
+                    $size->size_id = $id;
+                    $size->quantity = $request->input($id . 'sizeqty') ?? 0;
+                    $size->price = $request->input($id . 'sizeprice') ?? $product->price;
+                    $size->save();
                 }
             }
             if ($request->hasFile('images')) {

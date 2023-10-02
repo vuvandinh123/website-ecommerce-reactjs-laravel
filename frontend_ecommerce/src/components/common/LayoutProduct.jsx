@@ -5,7 +5,7 @@ import Product from "./Product";
 import PlacehoderCard from "./PlacehoderCard";
 import Loader from "./Loader";
 
-const LayoutProduct = ({ data ,loading,progress}) => {
+const LayoutProduct = ({ data, loading,setSortBy,setParams,params }) => {
   var co = JSON.parse(localStorage.getItem("col")) || 0;
   const [col, setCol] = useState(co);
   useEffect(() => {
@@ -20,9 +20,13 @@ const LayoutProduct = ({ data ,loading,progress}) => {
       window.removeEventListener("resize", handleResize);
     };
   }, [col]);
+  const handleChangeSort = (e) => {
+    setSortBy(e.target.value);
+    setParams({ ...params, sortBy: e.target.value });
+  }
   return (
     <>
-      {(progress>0 && progress<100) && <Loader number={progress}/>}
+      {loading && <Loader />}
       <div className="bg-white p-5 rounded-md">
         <div className="flex justify-between items-center">
           <div>
@@ -133,16 +137,17 @@ const LayoutProduct = ({ data ,loading,progress}) => {
             <select
               name=""
               id=""
+              onChange={handleChangeSort}
               className="outline-none p-2 border rounded-md"
             >
-              <option value="">Featured</option>
-              <option value="">Best selling</option>
-              <option value=""> Alphabetically, A-Z</option>
-              <option value="">Alphabetically, Z-A</option>
-              <option value="">Price, low to high</option>
-              <option value="">Price, high to low</option>
-              <option value="">Date, old to new</option>
-              <option value="">Date, new to old</option>
+              <option value="Featured">Featured</option>
+              <option value="BestSelling">Best selling</option>
+              <option value="AlphabeticallyA-Z"> Alphabetically, A-Z</option>
+              <option value="AlphabeticallyZ-A">Alphabetically, Z-A</option>
+              <option value="Price-low-to-high">Price, low to high</option>
+              <option value="Price-low-to-low">Price, high to low</option>
+              <option value="Date-old-to-new">Date, old to new</option>
+              <option value="Date-new-to-old">Date, new to old</option>
             </select>
           </div>
         </div>
@@ -156,7 +161,7 @@ const LayoutProduct = ({ data ,loading,progress}) => {
           "min-[500px]:grid-cols-2 min-[600px]:grid-cols-3 min-[900px]:grid-cols-4 min-[1000px]:grid-cols-3 min-[1280px]:grid-cols-4 min-[1400px]:grid-cols-5"
         }  gap-y-2 mt-3 grid-cols-${col}`}
       >
-        {(!loading)
+        {!loading
           ? data.map((item, index) => (
               <div key={index} className="mb-1">
                 {col == 1 ? (
@@ -166,17 +171,23 @@ const LayoutProduct = ({ data ,loading,progress}) => {
                 )}
               </div>
             ))
-          : Array(5)
+          : Array(data?.length || 10)
               .fill(null)
-              .map((item, index) => <PlacehoderCard key={index}/>)}
+              .map((item, index) => <PlacehoderCard key={index} />)}
       </div>
+      {!loading && data.length === 0 && (
+        <p className="text-center my-10 text-xl text-gray-400">PRODUCTS NOT FOUND</p>
+      )}
     </>
   );
 };
 LayoutProduct.propTypes = {
   data: PropTypes.array.isRequired,
   loading: PropTypes.bool,
-  progress: PropTypes.number
+  progress: PropTypes.number,
+  setSortBy: PropTypes.func,
+  setParams: PropTypes.func,
+  params: PropTypes.object,
 };
 
 export default LayoutProduct;

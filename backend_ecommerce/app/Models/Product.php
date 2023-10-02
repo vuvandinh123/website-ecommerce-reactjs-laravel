@@ -16,13 +16,13 @@ class Product extends Model
     public function colors()
     {
         return $this->belongsToMany(Color::class, 'products_colors')
-            ->select(['colors.id', 'colors.name']);
+            ->select(['colors.id', 'colors.name'])->withPivot(['quantity','price']);
     }
     
     public function sizes()
     {
         return $this->belongsToMany(Size::class, 'products_sizes')
-            ->select(['sizes.id', 'sizes.name']);
+            ->select(['sizes.id', 'sizes.name'])->withPivot(['quantity','price']);
     }
     public function discount()
     {

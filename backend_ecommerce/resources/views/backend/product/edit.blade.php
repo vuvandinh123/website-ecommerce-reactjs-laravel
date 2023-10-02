@@ -184,7 +184,7 @@
                                                         {{ $item->name }}
                                                     </label>
                                                     <div class="row change-value">
-                                                        <div class="col-6">
+                                                        <div class="col-6"> 
                                                             <input value="{{ $item2->pivot->quantity }}" name={{ $item->id . 'colorqty' }} style="height: 30px"
                                                                 placeholder="quantity" type="number"
                                                                 class="form-control rounded-0">
