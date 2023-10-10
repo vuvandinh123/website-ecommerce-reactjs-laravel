@@ -8,7 +8,7 @@ import { AppURL } from "../../api/AppURL";
 import { Link } from "react-router-dom";
 import { setIsOpenCart } from "../../redux/cartSlice";
 import { useRef } from "react";
-import { useOffcanvas } from "../../hooks/useOffcanvas";
+import { useOffcanvas } from "../../hooks";
 import { useCart } from "../../hooks";
 const Cart = ({ cart, setCart, cartRef }) => {
   const { cartAr, isOpen } = useSelector((state) => state.cart);

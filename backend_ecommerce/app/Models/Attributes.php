@@ -8,10 +8,4 @@ use Illuminate\Database\Eloquent\Model;
 class Attributes extends Model
 {
     use HasFactory;
-    protected $table = 'attributes';
-    public function value()
-    {
-        return $this->hasMany(Values::class);
-    }
-
 }

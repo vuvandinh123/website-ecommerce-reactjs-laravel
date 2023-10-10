@@ -7,7 +7,7 @@ import { useDropdown } from "../../hooks";
 import { useEffect, useRef, useState } from "react";
 import { HiOutlineMenuAlt1, HiOutlineTag } from "react-icons/hi";
 import Cart from "./Cart";
-import { useOffcanvas } from "../../hooks/useOffcanvas";
+import { useOffcanvas } from "../../hooks";
 import Favourite from "./Favourite";
 import { productApi } from "../../api/productApi";
 import { AppURL } from "../../api/AppURL";

@@ -4,7 +4,7 @@ const axiosInstanceConfig = {
     baseURL :AppURL.BaseURL,
     headers: {
         accept: 'application/json',
-        'X-API-KEY': AppURL.API_KEY
+        'Content-Type': 'multipart/form-data' 
     }
 }
 export const axiosInstance = axios.create(axiosInstanceConfig);

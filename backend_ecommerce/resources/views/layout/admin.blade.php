@@ -43,7 +43,7 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('.loading').fadeOut(0.5); // Ẩn hiệu ứng load trang sau 2 giây
+        $('.loading').fadeOut(0.1); // Ẩn hiệu ứng load trang sau 2 giây
     });
 </script>
 
@@ -129,6 +129,28 @@
                             <i class="ni ni-collection text-info text-sm opacity-10"></i>
                         </div>
                         <span class="nav-link-text ms-1">Thương hiệu</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">dữ liệu Nhập sản phẩm
+                    </h6>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('admin/post') ? 'active' : '' }}"
+                        href="{{ route('invoice.index') }}">
+                        <div
+                            class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M5 4.75C3.20507 4.75 1.75 6.20507 1.75 8V19C1.75 20.7949 3.20507 22.25 5 22.25H16C17.7949 22.25 19.25 20.7949 19.25 19V11.5V8C19.25 6.20507 17.7949 4.75 16 4.75H12.5H5Z"
+                                    fill="#ECEFF1" />
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M19.0303 1.96967C18.7374 1.67678 18.2626 1.67678 17.9697 1.96967L8.96968 10.9697C8.85493 11.0844 8.78049 11.2333 8.75755 11.3939L8.25755 14.8939C8.22416 15.1276 8.30275 15.3634 8.46968 15.5303C8.6366 15.6973 8.87238 15.7758 9.10607 15.7425L12.6061 15.2425C12.7667 15.2195 12.9156 15.1451 13.0303 15.0303L22.0303 6.03033C22.3232 5.73744 22.3232 5.26256 22.0303 4.96967L19.0303 1.96967Z"
+                                    fill="#5E94FF" />
+                            </svg>
+                        </div>
+                        <span class="nav-link-text ms-1">Nhập</span>
                     </a>
                 </li>
                 <li class="nav-item mt-3">
@@ -265,7 +287,7 @@
                                 <i class="fa fa-user me-sm-1"></i>
                                 <span class="d-sm-inline d-none"><a class="d-sm-inline text-light"
                                         href="{{ route('admin.logout') }}">Đăng xuất</a></span>
-                            </a> 
+                            </a>
                         </li>
                         <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
                             <a href="javascript:;" class="nav-link text-white p-0" id="iconNavbarSidenav">
@@ -510,6 +532,9 @@
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
     </script>
+
+
+
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
@@ -560,8 +585,9 @@
     <script src="{{ asset('js/validation.js') }}"></script>
     <script src="{{ asset('js/ajax.js') }}"></script>
     <script></script>
-    <script src="https://cdn.tiny.cloud/1/j1fsmmahijypg88g0gdlwwsd58m55rdo2znfck5736tz7q07/tinymce/6/tinymce.min.js"
-        referrerpolicy="origin"></script>
+    {{-- <script src="https://cdn.tiny.cloud/1/j1fsmmahijypg88g0gdlwwsd58m55rdo2znfck5736tz7q07/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script> --}}
+    <script src="{{ asset('js/tinymce/tinymce.min.js') }}"></script>
     <script>
         tinymce.init({
             selector: '#detail',
@@ -580,6 +606,7 @@
             ]
         });
     </script>
+
     @yield('ajax')
     @yield('script')
 </body>

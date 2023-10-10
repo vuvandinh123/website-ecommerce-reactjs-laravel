@@ -5,6 +5,7 @@ use App\Http\Controllers\backend\BrandController;
 use App\Http\Controllers\backend\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\backend\DashboardController;
+use App\Http\Controllers\backend\InvoicesController;
 use App\Http\Controllers\backend\ProductController;
 
 /*
@@ -69,6 +70,18 @@ Route::prefix('admin')->middleware('loginadmin')->group(function () {
         Route::post('{id}/trash', [BrandController::class, 'setTrash']);
     });
     Route::resource('brand', BrandController::class);
+
+    Route::prefix('invoice')->group(function () {
+        Route::get('trash', [InvoicesController::class, 'trash'])->name('invoice.trash');
+        Route::post('{id}/status', [InvoicesController::class, 'status']);
+        Route::post('validateName', [InvoicesController::class, 'validateName']);
+        Route::post('destroyAll', [InvoicesController::class, 'destroyAll']);
+        Route::post('destroy', [InvoicesController::class, 'destroy']);
+        Route::post('deleteAll', [InvoicesController::class, 'deleteAll']);
+        Route::post('restore', [InvoicesController::class, 'restore']);
+        Route::post('{id}/trash', [InvoicesController::class, 'setTrash']);
+    });
+    Route::resource('invoice', InvoicesController::class);
     /**
      * Router post
      */

@@ -9,7 +9,11 @@ export const brandApi = {
      * @return {Promise} A promise that resolves to the response data.
      */
     getAll(slug,params) {
-        var url = `/brands/${slug}`;
+        var url = `/brands`;
         return axiosInstance.get(url, { params }) 
     }
+    // getAll(slug,params) {
+    //     var url = `/brands/${slug}`;
+    //     return axiosInstance.get(url, { params }) 
+    // }
 }

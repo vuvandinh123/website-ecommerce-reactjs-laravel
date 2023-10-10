@@ -40,7 +40,7 @@ function setHandleClick(table) {
      * set destroy 
      */
 
-    $('.destroy').click(function(e){
+    $('.destroy').click(function (e) {
         let id = $(this).attr('data-id');
         let setUrlDestroy = `/admin/${table}/destroy`
         let element = $(this)
@@ -48,7 +48,7 @@ function setHandleClick(table) {
             let parent = element.closest('tr')
             $(parent).remove();
             toastr.success('Đã xóa!', 'Thành công')
-         })
+        })
 
     })
     /**
@@ -97,4 +97,49 @@ function setHandleClick(table) {
         })
 
     });
+
 }
+
+// function add(i = 1) {
+//     var html = ''
+//     for (let index = 0; index < i; index++) {
+//         html += `
+//         <tr>
+//                             <td>
+//                                 <select style="width: 150px" id="select-state${index}" class="select form-control" placeholder="Pick a state...">
+//                                     <option value="${index}">${index}</option>
+//                                 </select>
+//                             </td>
+//                             <td>
+//                                 <select style="width: 150px" id="select-state${index+i*i}" class="select form-control" placeholder="Pick a state...">
+//                                     <option value="${index}">${index}</option>
+//                                 </select>
+//                             </td>
+//                             <td>
+//                                 <input type="number" class="form-control w-50" >
+//                             </td>
+//                             <td>
+//                                 <input type="number" class="form-control w-75" >
+//                             </td>
+//                             <td>
+//                                 <input type="date" class="form-control w-75" >
+//                             </td>
+//                             <td class="text-center">
+//                                 111111
+//                             </td>
+//                             <td class="text-center">
+//                                 <span><i class="fa-regular fa-trash-can"></i></span>
+//                             </td>
+//                         </tr>
+//         `
+//     }
+//     $('#add-product').html(html);
+//     // $(selector).html(htmlString);
+// }
+// var i=1
+// $('#btn-new').click(function () {
+//     i++;
+//     console.log(i);
+//     add(i);
+// });
+// add(i)

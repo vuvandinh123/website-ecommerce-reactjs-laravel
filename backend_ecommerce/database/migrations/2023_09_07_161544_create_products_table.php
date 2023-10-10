@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('slug',255);
             $table->string('description',1000);
             $table->float('price');
-            $table->integer('quantity');
-            $table->unsignedInteger('views')->default(0);
+            $table->float('retail_price');
+            $table->float('wholesale_price');
             $table->mediumText('detail');
             $table->string('meta_title',255);
             $table->integer('visibility_home')->default(1);

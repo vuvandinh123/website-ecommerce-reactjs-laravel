@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Image;
 use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -15,33 +18,20 @@ class ProductController extends Controller
     {
         $category = $request->category;
         $brand =  json_decode($request->brand) ?? [];
-        $colors = json_decode($request->color) ?? [];
-        $sizes = json_decode($request->size) ?? [];
         $sortBy = $request->sortBy;
+        $search = $request->search;
         $totalProducts = Product::count();
         $page = $request->input('page', 1);
         $limit = $request->input('limit', 10);
         $min = $request->min;
         $max = $request->max;
         $query = Product::query();
-        if ((!empty($category) && $category != 'all') || (count($brand) > 0) || (count($colors) > 0) || (count($sizes) > 0) || !empty($min) || !empty($max)) {
-            if (count($colors) > 0) {
-                $query->join('products_colors', 'products.id', '=', 'products_colors.product_id')
-                    ->join('colors', 'products_colors.color_id', '=', 'colors.id')
-                    ->select('products.*', 'colors.name AS color_name')
-                    ->whereIn('colors.id', $colors);
-            }
-            if (count($sizes) > 0) {
-                $query->join('products_sizes', 'products.id', '=', 'products_sizes.product_id')
-                    ->join('sizes', 'products_sizes.size_id', '=', 'sizes.id')
-                    ->select('products.*', 'sizes.name AS size_name')
-                    ->whereIn('sizes.id', $sizes);
-            }
+        if ((!empty($category) && $category != 'all') || (count($brand) > 0) || !empty($min) || !empty($max)) {
             if ((!empty($category) && $category != 'all')) {
                 $query->join('categories', 'products.category_id', '=', 'categories.id')
                     ->select('products.*', 'categories.name AS category_name', 'categories.slug AS category_slug')->where('categories.slug', $category);
             }
-            if (count($brand) > 0) {
+            if (count($brand) > 0 && $brand[0] != null) {
                 $query->whereIn('brand_id', $brand);
             }
             if (!empty($min)) {
@@ -50,25 +40,28 @@ class ProductController extends Controller
             if (!empty($max)) {
                 $query->where('products.price', '<=', $max);
             }
-        } 
-        if($sortBy == 'Featured'){
+        }
+        if (!empty($search)) {
+            $query->where('products.name', 'like', '%' . $search . '%');
+        }
+        if ($sortBy == 'Featured') {
             $query->orderBy('products.created_at', 'asc');
-        }else if($sortBy == 'BestSelling'){
+        } else if ($sortBy == 'BestSelling') {
             $query->orderBy('products.created_at', 'desc');
-        }else if($sortBy == 'AlphabeticallyA-Z'){
+        } else if ($sortBy == 'AlphabeticallyA-Z') {
             $query->orderBy('products.name', 'asc');
-        }else if($sortBy == 'AlphabeticallyZ-A'){
+        } else if ($sortBy == 'AlphabeticallyZ-A') {
             $query->orderBy('products.name', 'desc');
-        }else if($sortBy == 'Price-low-to-high'){
+        } else if ($sortBy == 'Price-low-to-high') {
             $query->orderBy('products.price', 'asc');
-        }else if($sortBy == 'Price-low-to-low'){
+        } else if ($sortBy == 'Price-low-to-low') {
             $query->orderBy('products.price', 'desc');
-        }else if($sortBy == 'Date-old-to-new'){
+        } else if ($sortBy == 'Date-old-to-new') {
             $query->orderBy('products.created_at', 'asc');
-        }else if($sortBy == 'Date-new-to-old'){
+        } else if ($sortBy == 'Date-new-to-old') {
             $query->orderBy('products.created_at', 'desc');
         }
-        $products = $query->with(['images'])->paginate($limit, ['*'], 'page', $page);
+        $products = $query->with(['images', 'category', 'brand'])->orderBy('products.created_at', 'desc')->paginate($limit, ['*'], 'page', $page);
         $respone = [
             "total" => $totalProducts,
             "data" => $products,
@@ -98,7 +91,36 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $product = new Product();
+        $product->name = $request->name;
+        $product->slug = Str::slug($product->name, '-');
+        $product->category_id = (int)$request->category;
+        $product->brand_id = (int)$request->brand;
+        $product->price = (float)$request->price;
+        $product->retail_price = (float)$request->retail_price;
+        $product->wholesale_price = (float)$request->wholesale_price;
+        $product->description = $request->description;
+        $product->detail = $request->detail;
+        $product->metakey = $request->metakey;
+        $product->metadesc = $request->metadesc;
+        $product->meta_title = $request->metatitle ?? 'ko co';
+        $product->visibility_home = 1;
+        $product->created_by = 1;
+        $product->status = (int)$request->status;
+        if ($product->save()) {
+            if ($request->hasFile('images')) {
+                $i = 0;
+                foreach ($request->file('images') as $file) {
+                    $image = new Image();
+                    $filename = $product->slug . Carbon::now()->format('YmdHis') . Carbon::now()->micro . $i++ . '.' . $file->getClientOriginalExtension();
+                    $file->move(public_path('images'), $filename);
+                    $image->image_url = $filename;
+                    $image->product_id = $product->id;
+                    $image->save();
+                }
+            }
+        }
+        return response()->json($product);
     }
 
     /**
@@ -106,7 +128,7 @@ class ProductController extends Controller
      */
     public function show(string $slug)
     {
-        $product = Product::with(['images', 'colors', 'sizes'])->where('slug', $slug)->first();
+        $product = Product::with(['images'])->where('slug', $slug)->first();
         return $product;
     }
 
@@ -121,16 +143,67 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(string $id ,Request $request)
     {
-        //
+        $product = Product::find($id);
+        $product->name = $request->name;
+        $product->slug = Str::slug($product->name, '-');
+        $product->category_id = (int)$request->category;
+        $product->brand_id = (int)$request->brand;
+        $product->price = (float)$request->price;
+        $product->retail_price = (float)$request->retail_price;
+        $product->wholesale_price = (float)$request->wholesale_price;
+        $product->description = $request->description;
+        $product->detail = $request->detail;
+        $product->metakey = $request->metakey;
+        $product->metadesc = $request->metadesc;
+        $product->meta_title = $request->metatitle ?? 'ko co';
+        $product->visibility_home = 1;
+        $product->created_by = 1;
+        $product->status = (int)$request->status;
+        // $product->save();
+        // if ($product->save()) {
+        //     if ($request->hasFile('images')) {
+        //         $i = 0;
+        //         foreach ($request->file('images') as $file) {
+        //             $image = new Image();
+        //             $filename = $product->slug . Carbon::now()->format('YmdHis') . Carbon::now()->micro . $i++ . '.' . $file->getClientOriginalExtension();
+        //             $file->move(public_path('images'), $filename);
+        //             $image->image_url = $filename;
+        //             $image->product_id = $product->id;
+        //             $image->save();
+        //         }
+        //     }
+        // }
+        return response()->json($product);
     }
-
+    public function status($id)
+    {
+        $product = Product::find($id);
+        $product->status = $product->status == 2 ? 1 : 2;
+        $product->save();
+        return response()->json(array('mes' => $product->status), 200);
+    }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        if ($id) {
+            $product = Product::find($id);
+            if ($product) {
+                $product->images->each(function ($image) {
+                    $image->delete();
+                    $filePath = public_path('images/' . $image->image_url);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                });
+                $product->delete();
+            } else {
+            }
+        } else {
+        }
+        return response()->json(array('mes' => 'thanh cong'), 200);
     }
 }

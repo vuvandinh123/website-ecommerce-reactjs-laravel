@@ -19,7 +19,7 @@ class CategoryController extends Controller
 
     public function getCategory_filter($slug)
     {
-        $query = Categories_attributes::join('categories', 'categories_attributes.category_id', '=', 'categories.id')->join('values', 'categories_attributes.value_id', '=', 'values.id')->select('categories.*', 'values.name AS value_name');
+    //     $query = Categories_attributes::join('categories', 'categories_attributes.category_id', '=', 'categories.id')->join('values', 'categories_attributes.value_id', '=', 'values.id')->select('categories.*', 'values.name AS value_name');
     }
     /**
      * Show the form for creating a new resource.

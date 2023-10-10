@@ -13,6 +13,12 @@ class Product extends Model
     {
         return $this->hasMany(Product_image::class);
     }
+    public function category() {
+        return $this->belongsTo(Category::class);
+    }
+    public function brand() {
+        return $this->belongsTo(Brand::class);
+    }
     public function colors()
     {
         return $this->belongsToMany(Color::class, 'products_colors')
