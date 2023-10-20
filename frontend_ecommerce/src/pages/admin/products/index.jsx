@@ -1,36 +1,39 @@
 import { AppURL } from "../../../api/AppURL";
-import { productApi } from "../../../api/productApi";
-import { useApiCall } from "../../../hooks";
+import { useApiCall, useOffcanvas } from "../../../hooks";
 import NotImage from "../../../assets/image/icon-image-not-found-free-vector.jpg";
 import { Link } from "react-router-dom";
-import Skeleton from "react-loading-skeleton";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Pagination from "../../../components/admin/Pagination";
 import Filter from "./Filter";
 import SkeletonProduct from "./SkeletonProduct";
+import { productApi } from "../../../api/admin/productApi";
+import { toast } from "react-toastify";
 const ProductAdmin = () => {
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState("");
-  const [status,setStatus] = useState(0);
+  const [status, setStatus] = useState(0);
   const [filter, setFilter] = useState({
     page: 1,
     limit: 5,
-    category: "all",
+    category: "",
     brand: "",
     search: "",
     sortBy: "",
   });
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     setFilter({ ...filter, search: search });
   };
   const handleDeleteClick = async (id) => {
     await productApi.delete(id);
+    setDeleteId(id);
+    toast.success("Xoá sản phẩm thành công");
   };
-  console.log(status);
   const handleStatusClick = async (id) => {
     await productApi.status(id);
     setStatus(Math.random());
+    toast.success("Thay đổi trạng thái thành công");
   };
   const { data, loading } = useApiCall(
     async () => {
@@ -145,7 +148,9 @@ const ProductAdmin = () => {
                             </div>
                             <div className="ml-3">
                               <p className="text-gray-900 whitespace-no-wrap">
-                                {product.name}
+                                <Link to={`/admin/products/${product.slug}`}>
+                                  {product.name}
+                                </Link>
                               </p>
                             </div>
                           </div>
@@ -172,7 +177,7 @@ const ProductAdmin = () => {
                         </td> */}
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <span
-                          onClick={() => handleStatusClick(product.id)}
+                            onClick={() => handleStatusClick(product.id)}
                             className={`relative cursor-pointer inline-block px-3 py-1 font-semibold text-green-900 leading-tight`}
                           >
                             <span
@@ -219,6 +224,7 @@ const ProductAdmin = () => {
           </div>
         </div>
       </div>
+      
     </div>
   );
 };

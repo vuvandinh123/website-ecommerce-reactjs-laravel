@@ -2,6 +2,10 @@ import { useRef, useState } from "react";
 import Slider from "react-slick";
 import { ImageLoader } from "../../components/common";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
+import { useApiCall } from "../../hooks";
+import { postApi } from "../../api/site/postApi";
+import { Link } from "react-router-dom";
+import { AppURL } from "../../api/AppURL";
 
 const News = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -52,7 +56,15 @@ const News = () => {
     ],
   };
   const arrowsRef = useRef(null);
-
+  const { data, loading } = useApiCall(
+    async () => {
+      return await postApi.getAll();
+    },
+    [],
+    []
+  );
+  const listPost = data?.data?.data?.data || [];
+  console.log(listPost);
   const handleClickNext = () => {
     arrowsRef.current.slickNext();
   };
@@ -75,36 +87,51 @@ const News = () => {
       >
         <i className="fa-solid fa-angle-right"></i>
       </button>
-      <Slider ref={arrowsRef} {...settings} >
-        {Array(10)
-          .fill(null)
-          .map((item, index) => {
+      <Slider ref={arrowsRef} {...settings}>
+        {listPost.length > 0 &&
+          listPost?.map((item, index) => {
             return (
               <div key={index} className="">
                 <div className="relative   rounded-md group mx-2 overflow-hidden bg-white ">
                   <div className="overflow-hidden  min-h-[200px] relative">
-                    <ImageLoader src="https://demo-uminex.myshopify.com/cdn/shop/articles/10_cc1abdba-a10a-4889-8b57-88133851a0ba_360x.png?v=1677830513" className={"group-hover:scale-105 group-hover:shadow-md h-full transition-all duration-300"}/>
+                    <Link to={`/post/${item?.slug}`}>
+                      <ImageLoader
+                        src={AppURL.ImageUrl + item?.image}
+                        className={
+                          "group-hover:scale-105 h-[200px] group-hover:shadow-md  transition-all duration-300"
+                        }
+                      />
+                    </Link>
                   </div>
                   <div className="p-5 flex flex-col gap-2 border-b">
                     <a href="" className="text-[#2b38d1] text-[12px]">
                       TECHNOLOGY
                     </a>
                     <h3 className="text-[17px] font-[600]">
-                      <a href="" className="hover:text-[#2b38d1]">
-                        The Smartphone Has Just Launched in Sep 2022
+                      <a
+                        href=""
+                        className="hover:text-[#2b38d1] text-[17px] text-ellipsis h-10 w-full line-clamp-2 leading-[1.2em] max-h-[2.4em]  overflow-hidden "
+                      >
+                        {item?.title}
                       </a>{" "}
                     </h3>
                     <div className="text-[#8d979e] text-[12px] uppercase">
                       Post by ALO Support
                     </div>
-                    <p className="text-gray-500">
-                      iPad Pro is the fastest device of its kind. It’s designed
-                      to take full advantage...
+                    <p className="text-gray-500 text-[14px] text-ellipsis  w-full line-clamp-2 leading-[1.5em]   overflow-hidden">
+                      {item?.compact}
                     </p>
                   </div>
                   <div className="flex justify-between items-center p-3">
                     <div className="text-[12px] ">
-                      <a href="" className="hover:text-[#2b38d1] group/read  flex"> READ MORE <MdKeyboardDoubleArrowRight className="text-[18px]  ms-1 group-hover/read:translate-x-2 transition-all duration-300" /></a>
+                      <a
+                        href=""
+                        className="hover:text-[#2b38d1] group/read  flex"
+                      >
+                        {" "}
+                        READ MORE{" "}
+                        <MdKeyboardDoubleArrowRight className="text-[18px]  ms-1 group-hover/read:translate-x-2 transition-all duration-300" />
+                      </a>
                     </div>
                     <div className="text-[#8d979e] text-[12px]">
                       <span className="me-2">MAR</span>

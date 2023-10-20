@@ -6,6 +6,7 @@ import { AppURL } from "../../api/AppURL.js";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { byToCart, setIsOpenCart } from "../../redux/cartSlice";
+import formatPrice from "../../utils/formathPrice";
 
 const Product = ({ deals, data }) => {
   const dispatch = useDispatch();
@@ -19,7 +20,7 @@ const Product = ({ deals, data }) => {
     };
     dispatch(byToCart(newCart));
     dispatch(setIsOpenCart(true));
-  }; 
+  };
   return (
     <div className="">
       <div className="mx-1 flex h-full flex-col justify-between  group rounded-md overflow-hidden relative  bg-white p-[20px]">
@@ -27,16 +28,22 @@ const Product = ({ deals, data }) => {
           <div className="cursor-pointer relative min-h-[140px]">
             <Link to={`/products/${data?.slug}`}>
               <ImageLoader
-                src={AppURL.ImageUrl + data?.images[0]?.image_url}
+                src={
+                  data?.images
+                    ? AppURL.ImageUrl + data?.images[0]?.image_url
+                    : ""
+                }
                 className={
                   "lg:group-hover:hidden h-full   lg:group-hover:scale-105 transition-all duration-300"
                 }
               />
-              <img
-                className="!hidden lg:group-hover:!block lg:group-hover:scale-105 transition-all duration-500"
-                src="https://demo-uminex.myshopify.com/cdn/shop/products/products_12_1.jpg?v=1672302207&width=360"
-                alt=""
-              />
+              {data.images && data?.images[1]?.image_url && (
+                <img
+                  className="!hidden lg:group-hover:!block lg:group-hover:scale-105 transition-all duration-500"
+                  src={AppURL.ImageUrl + data?.images[1]?.image_url}
+                  alt=""
+                />
+              )}
             </Link>
           </div>
           <div
@@ -108,7 +115,7 @@ const Product = ({ deals, data }) => {
           </div>
           <div className="flex items-center gap-3">
             <h4 className="text-[#3741ff] font-bold text-base mt-1">
-              ${data?.price}
+              {data?.price && formatPrice(data?.price)}
             </h4>
             <span className="text-gray-300 font-thin text-xs mt-1 line-through">
               $300.00

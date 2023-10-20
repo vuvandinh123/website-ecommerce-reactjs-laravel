@@ -1,6 +1,10 @@
 import { AiOutlineCheck } from "react-icons/ai";
 import PropTypes from "prop-types";
 import { AppURL } from "../../api/AppURL";
+import formatPrice from "../../utils/formathPrice";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { byToCart, setIsOpenCart } from "../../redux/cartSlice";
 
 const Product2 = ({ data }) => {
   const newCart = {
@@ -8,32 +12,44 @@ const Product2 = ({ data }) => {
     price: data.price,
     id: data.id,
     image: data?.images[0].image_url,
+    image2: data?.images[1].image_url,
     slug: data.slug,
   };
-
+  const dispatch = useDispatch();
+  const handleClickToCart = () => {
+    const newCart = {
+      name: data.name,
+      price: data.price,
+      id: data.id,
+      image: data?.images[0].image_url,
+      slug: data.slug,
+    };
+    dispatch(byToCart(newCart));
+    dispatch(setIsOpenCart(true));
+  };
   return (
     <div className="flex bg-white justify-between p-5">
-      <div className="flex  ">
+      <div className="flex ">
         <div className="group">
-          <a href="">
+          <Link to={`/products/${newCart.slug}`} >
             <img
               className="w-[200px] group-hover:opacity-0 absolute transition-all duration-400"
               src={AppURL.ImageUrl + newCart.image}
               alt=""
             />
             <img
-              className="w-[200px]"
-              src="https://demo-uminex.myshopify.com/cdn/shop/products/products_32_2.jpg?v=1678075239&width=360"
+              className="w-[200px] group-hover:scale-105"
+              src={AppURL.ImageUrl + newCart.image2}
               alt=""
             />
-          </a>
+          </Link>
         </div>
 
         <div className="mt-12">
           <h3 className="text-[#212529] font-semibold mb-2">
-            <a href="" className="block">
+            <Link to={`/products/${newCart.slug}`}  className="block">
               {newCart.name}
-            </a>
+            </Link>
           </h3>
           <div className="flex items-center gap-3">
             <div className="flex items-center gapx-3 text-yellow-500">
@@ -64,8 +80,10 @@ const Product2 = ({ data }) => {
         <p className="flex items-center gap-3 text-red-500">
           <AiOutlineCheck /> Out of Stock
         </p>
-        <h3 className="font-bold text-xl text-blue-600 mt-3">${newCart.price}</h3>
-        <button className="rounded-full px-20 py-3 mt-5 text-white bg-blue-500">
+        <h3 className="font-bold text-xl text-blue-600 mt-3">
+          {formatPrice(newCart?.price)}
+        </h3>
+        <button onClick={handleClickToCart} className="rounded-full px-20 py-3 mt-5 text-white bg-blue-500">
           Add to cart
         </button>
       </div>

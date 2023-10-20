@@ -10,7 +10,8 @@ const Select = ({ label, ...props }) => {
       >
         {label}
       </label>
-      <select {...props} {...field}></select>
+      <select {...props} {...field}>
+      </select>
       {meta.touched && meta.error && (
         <div className="text-red-500 text-[12px] mt-2 ms-1">{meta.error}</div>
       )}

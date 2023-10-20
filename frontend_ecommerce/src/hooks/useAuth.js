@@ -9,7 +9,7 @@ export default function useAuth(token){
             Authorization: `Bearer ${token}`,
           };
           axios
-            .get("http://127.0.0.1:8000/api/auth/user", { headers })
+            .get("http://127.0.0.1:8000/api/admin/auth/user", { headers })
             .then((response) => {
               const userData = response.data;
               setUser(userData);

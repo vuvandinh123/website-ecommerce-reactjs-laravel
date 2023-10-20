@@ -1,10 +1,8 @@
 import PropTypes from "prop-types";
 import shiping from "../../../public/shiping.svg";
-import { Link, useNavigate } from "react-router-dom";
-import { couponApi } from "../../api/couponApi";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { shippingApi } from "../../api/shippingApi";
 
 const Order = ({totalPrice,amount,handleClickCheckout}) => {
   const discount = 5000;
@@ -24,8 +22,8 @@ const Order = ({totalPrice,amount,handleClickCheckout}) => {
   },[priceShipping,dataCoupon,totalPrice])
   useEffect(() => {
     const fetch = async () => {
-      const respone = await shippingApi.getAll();
-      setShipping(respone.data);
+      // const respone = await shippingApi.getAll();
+      // setShipping(respone.data);
     };
     fetch();
   }, []);
@@ -33,14 +31,14 @@ const Order = ({totalPrice,amount,handleClickCheckout}) => {
     e.preventDefault();
     try {
       const fetch = async () => {
-        const res = await couponApi.get(coupon);
-        if (res.data) {
-          setDataCoupon(res.data);
-          toast.success("Add coupon success!");
-          setMes("");
-        } else {
-          setMes("Incorrect discount code");
-        }
+        // const res = await couponApi.get(coupon);
+        // if (res.data) {
+        //   setDataCoupon(res.data);
+        //   toast.success("Add coupon success!");
+        //   setMes("");
+        // } else {
+        //   setMes("Incorrect discount code");
+        // }
       };
       if (coupon != "") {
         fetch();

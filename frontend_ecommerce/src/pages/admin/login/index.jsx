@@ -1,6 +1,5 @@
 import axios from "axios";
 import PropTypes from "prop-types";
-import { useState } from "react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,7 +7,7 @@ const Login = ({ setToken }) => {
   const handleSubmitLogin = async (values) => {
     try {
       await axios
-        .post("http://127.0.0.1:8000/api/auth/login", values)
+        .post("http://127.0.0.1:8000/api/admin/login", values)
         .then((response) => {
           const token = response.data;
           setToken(token);

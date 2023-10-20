@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useApiCall } from "../../../hooks";
-import { categoriesApi } from "../../../api/categoriesApi";
-import { brandApi } from "../../../api/brandApi";
+import { brandApi } from "../../../api/admin/brandApi";
+import { categoriesApi } from "../../../api/admin/categoriesApi";
 
 const Filter = ({ setFilter, filter }) => {
   const { data: categories } = useApiCall(
@@ -18,8 +18,9 @@ const Filter = ({ setFilter, filter }) => {
     [],
     []
   );
-  const listCategory = categories?.data;
-  const listBrand = brands?.data;
+
+  const listCategory = categories?.data?.data?.data;
+  const listBrand = brands?.data?.data?.data;
   return (
     <>
       <div className="flex justify-between items-center">
@@ -80,10 +81,10 @@ const Filter = ({ setFilter, filter }) => {
               }
               id=""
             >
-              <option value="all">Tất cả</option>
+              <option value="">Tất cả</option>
               {listCategory?.map((category) => {
                 return (
-                  <option key={category.id} value={category.slug}>
+                  <option key={category.id} value={category.id}>
                     {category.name}
                   </option>
                 );

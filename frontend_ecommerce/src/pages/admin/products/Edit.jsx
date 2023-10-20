@@ -1,13 +1,14 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { productApi } from "../../../api/productApi";
+
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { File, Input, Select, Textarea } from "../../../components/admin/form";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useApiCall } from "../../../hooks";
-import { categoriesApi } from "../../../api/categoriesApi";
-import { brandApi } from "../../../api/brandApi";
+import { categoriesApi } from "../../../api/admin/categoriesApi";
+import { brandApi } from "../../../api/admin/brandApi";
+import { productApi } from "../../../api/admin/productApi";
 
 const Edit = () => {
   const navigate = useNavigate();
@@ -19,13 +20,15 @@ const Edit = () => {
     [],
     []
   );
-  const {slug} = useParams();
+  
+  
+  const { slug } = useParams();
   const { data: product } = useApiCall(
     async () => {
       return await productApi.get(slug);
     },
     [],
-    undefined,
+    undefined
   );
 
   const { data: brands } = useApiCall(
@@ -35,13 +38,9 @@ const Edit = () => {
     [],
     []
   );
+
   const handleSubmitSave = async (values) => {
     const formData = new FormData();
-    console.log(values);
-    // for (let i = 0; i < images.length; i++) {
-    //   formData.append("images[]", images[i]);
-    // }
-    // console.log(values.id);
     const fields = [
       "name",
       "price",
@@ -60,7 +59,7 @@ const Edit = () => {
       formData.append(field, values[field]);
     });
     try {
-      const res = await productApi.update(values.id,values);
+      const res = await productApi.update(values.id, values);
       console.log(res);
       if (res.status === 200) {
         toast.success("Cập nhật sản phẩm thành công");
@@ -70,17 +69,21 @@ const Edit = () => {
       toast.error("Cập nhật sản phẩm thất bại");
     }
   };
-  console.log(product);
-  if(!product.data){
+  // console.log(product);
+  if (!product.data) {
     return <p className="text-2xl mx-5 my-5">Loading...</p>;
   }
+
+  const listCategory = categories?.data?.data?.data;
+  const listBrand = brands?.data?.data?.data;
   const productData = product.data;
+
   return (
     <div className="m-5">
       <Formik
         initialValues={{
-          id:productData?.id,
-          name:productData?.name ,
+          id: productData?.id,
+          name: productData?.name,
           price: productData?.price,
           description: productData?.description,
           brand: productData?.brand_id,
@@ -237,11 +240,9 @@ const Edit = () => {
                       placeholder="Iphone 15 PRO MAX"
                       className="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-3 text-[13px] font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
                     >
-                      <option value="" selected>
-                        Danh mục
-                      </option>
-                      {categories?.data?.length > 0 &&
-                        categories?.data?.map((category) => (
+                      <option value="">Danh mục</option>
+                      {listCategory?.length > 0 &&
+                        listCategory?.map((category) => (
                           <option key={category.id} value={category.id}>
                             {category.name}
                           </option>
@@ -255,14 +256,12 @@ const Edit = () => {
                       <option value="" selected>
                         Thương hiệu
                       </option>
-                     {
-                       brands?.data?.length > 0 &&
-                       brands?.data?.map((brand) => (
-                         <option key={brand.id} value={brand.id}>
-                           {brand.name}
-                         </option>
-                       ))
-                     }
+                      {listBrand?.length > 0 &&
+                        listBrand?.map((brand) => (
+                          <option key={brand.id} value={brand.id}>
+                            {brand.name}
+                          </option>
+                        ))}
                     </Select>
                     <Select
                       label={"Trạng thái"}

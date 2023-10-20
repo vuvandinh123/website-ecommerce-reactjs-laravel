@@ -50,15 +50,17 @@ class AuthController extends Controller
             'remember_me' => 'boolean'
         ]);
         $credentials = request(['email', 'password']);
-        if(!Auth::attempt($credentials))
+        if (!Auth::attempt($credentials))
             return response()->json([
-                'message' => 'Unauthorized123'
+                'status' => 501,
+                'message' => 'Unauthorized'
             ], 401);
+        
         $user = $request->user();
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
         if ($request->remember_me)
-            $token->expires_at = Carbon::now()->addWeeks(1);
+            $token->expires_at = Carbon::now()->addHour();
         $token->save();
         return response()->json([
             'access_token' => $tokenResult->accessToken,
@@ -68,7 +70,56 @@ class AuthController extends Controller
             )->toDateTimeString()
         ]);
     }
-  
+    public function logout()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json('Người dùng không tồn tại', 404);
+        }
+        $user->tokens->each(function ($token) {
+            $token->delete();
+        });
+        // Auth::logout();
+        return response()->json('Đăng xuất thành công');
+    }
+    public function singup(Request $request)
+    {
+        $request->validate([
+            'firstName' => 'required|string|max:255',
+            'lastName' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|min:6',
+        ]);
+        $isEmail = User::where('email', $request->input('email'))->first();
+        if ($isEmail) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Email đã được sử dụng'
+            ], 200);
+        }
+        $user = new User();
+        $user->firstName = $request->input('firstName');
+        $user->lastName = $request->input('lastName');
+        $user->email = $request->input('email');
+        $user->password = bcrypt($request->input('password'));
+        $user->role = 0;
+        $user->status = 1;
+        $user->save();
+        $tokenResult = $user->createToken('Personal Access Token');
+        $token = $tokenResult->token;
+        if ($request->remember_me)
+            $token->expires_at = Carbon::now()->addHour();
+        $token->save();
+        return response()->json([
+            'status'=>200,
+            'access_token' => $tokenResult->accessToken,
+            'token_type' => 'Bearer',
+            'expires_at' => Carbon::parse(
+                $tokenResult->token->expires_at
+            )->toDateTimeString()
+        ], 200);
+    }
+
     /**
      * Get the authenticated User
      *

@@ -14,37 +14,120 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('products')->group(function () {
+    Route::get('/', 'App\Http\Controllers\frontend\ProductController@index');
+    Route::get('/featured', 'App\Http\Controllers\frontend\ProductController@featured');
+    Route::get('/top_selling', 'App\Http\Controllers\frontend\ProductController@top_selling');
+    Route::get('/search/{value}', 'App\Http\Controllers\frontend\ProductController@search');
+    Route::get('/{slug}', 'App\Http\Controllers\frontend\ProductController@show');
+    Route::get('/categories/{id}', 'App\Http\Controllers\frontend\ProductController@productByCategory');
 });
-Route::group([
-    'prefix' => 'auth'
-], function () {
+
+Route::get('/discount/products', 'App\Http\Controllers\frontend\ProductDiscountController@index');
+Route::get('/categories', 'App\Http\Controllers\frontend\CategoryController@index');
+Route::get('/brands', 'App\Http\Controllers\frontend\BrandController@index');
+Route::prefix('auth')->group(function () {
+    Route::post('login', 'App\Http\Controllers\backend\AuthController@login');
+    Route::post('singup', 'App\Http\Controllers\backend\AuthController@singup');
+});
+Route::prefix('post')->group(function () {
+    Route::get('/', 'App\Http\Controllers\frontend\PostController@index');
+    Route::get('/{slug}', 'App\Http\Controllers\frontend\PostController@show');
+    Route::post('/search', 'App\Http\Controllers\frontend\PostController@search');
+});
+Route::prefix('topic')->group(function () {
+    Route::get('/', 'App\Http\Controllers\frontend\TopicController@index');
+    Route::get('/{slug}', 'App\Http\Controllers\frontend\TopicController@show');
+});
+
+Route::prefix('admin')->group(function () {
     Route::post('login', 'App\Http\Controllers\backend\AuthController@login');
     Route::group([
-      'middleware' => 'auth:api'
-    ], function() {
-        Route::get('user', 'App\Http\Controllers\backend\AuthController@user');
+        'middleware' => ['auth:api'],
+    ], function () {
+        Route::prefix('auth')->group(function () {
+            Route::get('user', 'App\Http\Controllers\backend\AuthController@user');
+            Route::post('logout', 'App\Http\Controllers\backend\AuthController@logout');
+        });
+        Route::prefix('products')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\ProductController@index');
+            Route::post('/', 'App\Http\Controllers\backend\ProductController@store');
+            Route::get('{slug}', 'App\Http\Controllers\backend\ProductController@show');
+            Route::delete('{id}', 'App\Http\Controllers\backend\ProductController@destroy');
+            Route::put('status/{id}', 'App\Http\Controllers\backend\ProductController@status');
+            Route::put('/{id}', 'App\Http\Controllers\backend\ProductController@update');
+        });
+        Route::prefix('categories')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\CategoryController@index');
+            Route::post('/', 'App\Http\Controllers\backend\CategoryController@store');
+            Route::put('status/{id}', 'App\Http\Controllers\backend\CategoryController@status');
+            Route::get('/{id}', 'App\Http\Controllers\backend\CategoryController@show');
+            Route::post('/{id}', 'App\Http\Controllers\backend\CategoryController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\backend\CategoryController@destroy');
+        });
+        Route::prefix('brands')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\BrandController@index');
+            Route::post('/', 'App\Http\Controllers\backend\BrandController@store');
+            Route::put('status/{id}', 'App\Http\Controllers\backend\BrandController@status');
+            Route::get('/{id}', 'App\Http\Controllers\backend\BrandController@show');
+            Route::post('/{id}', 'App\Http\Controllers\backend\BrandController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\backend\BrandController@destroy');
+        });
+        Route::prefix('posts')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\PostController@index');
+            Route::post('/', 'App\Http\Controllers\backend\PostController@store');
+            Route::get('/{id}', 'App\Http\Controllers\backend\PostController@show');
+            Route::put('/{id}', 'App\Http\Controllers\backend\PostController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\backend\PostController@destroy');
+        });
+        Route::prefix('topics')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\TopicController@index');
+            Route::post('/', 'App\Http\Controllers\backend\TopicController@store');
+            Route::get('/{id}', 'App\Http\Controllers\backend\TopicController@show');
+            Route::put('/{id}', 'App\Http\Controllers\backend\TopicController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\backend\TopicController@destroy');
+        });
+        Route::prefix('contacts')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\ContactController@index');
+            Route::post('/', 'App\Http\Controllers\backend\ContactController@store');
+            Route::get('/{id}', 'App\Http\Controllers\backend\ContactController@show');
+            Route::put('/{id}', 'App\Http\Controllers\backend\ContactController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\backend\ContactController@destroy');
+        });
+        Route::prefix('settings')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\SettingController@index');
+            Route::post('/', 'App\Http\Controllers\backend\SettingController@store');
+            Route::get('/{id}', 'App\Http\Controllers\backend\SettingController@show');
+            Route::put('/{id}', 'App\Http\Controllers\backend\SettingController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\backend\SettingController@destroy');
+        });
+        Route::prefix('suppliers')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\SuppliersController@index');
+            Route::post('/', 'App\Http\Controllers\backend\SuppliersController@store');
+            Route::get('/{id}', 'App\Http\Controllers\backend\SuppliersController@show');
+            Route::put('/{id}', 'App\Http\Controllers\backend\SuppliersController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\backend\SuppliersController@destroy');
+        });
+        Route::prefix('invoices')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\InvoicesController@index');
+            Route::post('/', 'App\Http\Controllers\backend\InvoicesController@store');
+            Route::get('/{id}', 'App\Http\Controllers\backend\InvoicesController@show');
+            Route::put('/{id}', 'App\Http\Controllers\backend\InvoicesController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\backend\InvoicesController@destroy');
+        });
     });
 });
-Route::get('/products', 'App\Http\Controllers\api\ProductController@index');
-Route::post('/products', 'App\Http\Controllers\api\ProductController@store');
-Route::get('/products/{slug}', 'App\Http\Controllers\api\ProductController@show');
-Route::delete('/products/{id}', 'App\Http\Controllers\api\ProductController@destroy');
-Route::put('/products/status/{id}', 'App\Http\Controllers\api\ProductController@status');
-Route::put('/products/{id}', 'App\Http\Controllers\api\ProductController@update');
-Route::get('/products/search/{value}', 'App\Http\Controllers\api\ProductController@search');
-
-Route::get('/categories', 'App\Http\Controllers\api\CategoryController@index');
-Route::get('/brands', 'App\Http\Controllers\api\BrandController@index');
-Route::get('/categories/{slug}', 'App\Http\Controllers\api\CategoryController@show');
-
-Route::get('/brands/{slug}', 'App\Http\Controllers\api\BrandController@getCategory');
-Route::get('/coupon/{code}', 'App\Http\Controllers\api\CouponController@index');
-Route::get('/shipping', 'App\Http\Controllers\api\ShippingController@index');
-// Route::post('/auth', 'App\Http\Controllers\backend\AuthController@login');
 
 
-Route::get('/discount/products', 'App\Http\Controllers\api\ProductDiscountController@index');
-Route::get('/colors', 'App\Http\Controllers\api\ColorController@index');
-Route::post('/upload', 'App\Http\Controllers\api\ImageController@create');
+
+// Route::get('/brands', 'App\Http\Controllers\api\BrandController@index');
+// Route::get('/categories/{slug}', 'App\Http\Controllers\api\CategoryController@show');
+
+// Route::get('/brands/{slug}', 'App\Http\Controllers\api\BrandController@getCategory');
+// Route::get('/coupon/{code}', 'App\Http\Controllers\api\CouponController@index');
+// Route::get('/shipping', 'App\Http\Controllers\api\ShippingController@index');
+// // Route::post('/auth', 'App\Http\Controllers\backend\AuthController@login');
+
+
+// Route::get('/colors', 'App\Http\Controllers\api\ColorController@index');
+// Route::post('/upload', 'App\Http\Controllers\api\ImageController@create');

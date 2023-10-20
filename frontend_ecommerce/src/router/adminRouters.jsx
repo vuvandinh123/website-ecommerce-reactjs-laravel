@@ -1,5 +1,21 @@
 import Admin from "../layouts/Admin";
-import { Dashboard, ProductAdmin, ProductCreate, ProductEdit } from "../pages/admin";
+import {
+  BrandAdmin,
+  BrandCreate,
+  BrandEdit,
+  BrandShow,
+  Category,
+  CategoryCreate,
+  CategoryEdit,
+  CategoryShow,
+  Dashboard,
+  Import,
+  ImportCreate,
+  ProductAdmin,
+  ProductCreate,
+  ProductEdit,
+  ProductShow,
+} from "../pages/admin";
 export const adminRoutes = [
   {
     path: "/admin",
@@ -9,6 +25,17 @@ export const adminRoutes = [
       { path: "products", element: <ProductAdmin /> },
       { path: "products/create", element: <ProductCreate /> },
       { path: "products/:slug/edit", element: <ProductEdit /> },
+      { path: "products/:slug", element: <ProductShow /> },
+      { path: "import-product", element: <Import /> },
+      { path: "import-product/create", element: <ImportCreate /> },
+      { path: "categories", element: <Category /> },
+      { path: "categories/create", element: <CategoryCreate /> },
+      { path: "categories/:id", element: <CategoryShow /> },
+      { path: "categories/:id/edit", element: <CategoryEdit /> },
+      { path: "brands", element: <BrandAdmin /> },
+      { path: "brands/:id", element: <BrandShow /> },
+      { path: "brands/:id/edit", element: <BrandEdit /> },
+      { path: "brands/create", element: <BrandCreate /> },
     ],
-  }
+  },
 ];

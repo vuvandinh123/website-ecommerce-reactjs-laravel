@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { categoriesApi } from "../../api/categoriesApi";
 import { AppURL } from "../../api/AppURL";
+import { categoriesApi } from "../../api/site/categoriesApi";
 
 const CategoryPage = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     const fetchApi = async () => {
       const res = await categoriesApi.getAll();
-      setData(res.data);
+      setData(res.data.data.data);
     };
     fetchApi();
   }, []);

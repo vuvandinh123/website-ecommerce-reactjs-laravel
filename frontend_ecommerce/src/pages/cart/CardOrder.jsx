@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { AppURL } from "../../api/AppURL";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import plus from "../../../public/plus.svg";
 import minus from "../../../public/minus.svg";
 import { useCart } from "../../hooks";
+import formatPrice from "../../utils/formathPrice";
 const CardOrder = () => {
   const { cartAr } = useSelector((state) => state.cart);
   const { deleteCart, handleQuantityClickPlus, handleQuantityClickMinus } =
@@ -34,8 +34,8 @@ const CardOrder = () => {
                         Wireless Controller Series Mac/Windows
                       </Link>{" "}
                     </h5>
-                    <h6 className="font-bold tracking-wider text-red-500 mt-3 text-base">
-                      ${item.price.toFixed(2)}
+                    <h6 className="font-bold text-[14px] tracking-wider text-red-500 mt-3 ">
+                      {formatPrice(item.price)}
                     </h6>
                   </div>
                 </div>
@@ -59,7 +59,7 @@ const CardOrder = () => {
                   </button>
                 </div>
                 <div className=" basis-1/5 font-bold text-center">
-                  ${item.total.toFixed(2)}
+                  {formatPrice(item.total)}
                 </div>
                 <div className="  font-bold">
                   <span

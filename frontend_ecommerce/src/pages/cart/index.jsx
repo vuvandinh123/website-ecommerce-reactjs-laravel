@@ -67,7 +67,7 @@ const CartPage = () => {
             <CardOrder/>
             <div className="py-5 border-b border-t flex justify-between items-center">
               <Link
-                to={"/products/all"}
+                to={"/categories/all"}
                 className="px-10 py-3 bg-blue-500 text-white uppercase rounded-full"
               >
                 Continue shopping

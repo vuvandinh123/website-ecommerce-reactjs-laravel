@@ -3,17 +3,15 @@ import HeaderAdmin from "../components/admin/Header";
 import FooterAdmin from "../components/admin/Footer";
 import Siderbar from "../components/admin/Siderbar";
 import { ToastContainer } from "react-toastify";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Login } from "../pages/admin";
 import { useAuth, useToken } from "../hooks";
-import axios from "axios";
 
 const Admin = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { token, setToken } = useToken();
   const { user } = useAuth(token);
-  console.log(user);
-  if (!token) {
+  if (!token || !user?.role || user?.role !== 1) {
     return <Login setToken={setToken} />;
   }
   return (
@@ -37,7 +35,6 @@ const Admin = () => {
       </div>
       <FooterAdmin />
       <ToastContainer />
-
     </div>
   );
 };

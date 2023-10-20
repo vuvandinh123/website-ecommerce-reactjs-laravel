@@ -16,9 +16,11 @@ class AdminLoginMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(!Auth::check()){
-            return redirect()->route('admin.login');
+        if (Auth::check()) {
+            // if(Auth::user()->role){
+            return $next($request);
+            // }
         }
-        return $next($request);
+        return response()->json(['status' => 403, 'message' => 'You are not admin', 'data' => Auth::user()], 403);
     }
 }

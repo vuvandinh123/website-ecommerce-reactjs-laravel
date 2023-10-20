@@ -3,7 +3,7 @@ import { Loader, PlacehoderCard, Product } from "../../components/common";
 import { useApiCall } from "../../hooks";
 import SlickCround from "../../components/common/SlickCround";
 import CountDown from "./CountDown";
-import { productDiscountApi } from "../../api/productDiscountApi";
+import { productDiscountApi } from "../../api/site/productDiscountApi";
 
 const Hotdeals = () => {
   const { data, loading } = useApiCall(

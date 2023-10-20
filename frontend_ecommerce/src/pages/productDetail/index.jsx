@@ -2,153 +2,115 @@ import { BsShield } from "react-icons/bs";
 import { LiaRulerHorizontalSolid } from "react-icons/lia";
 import { IoColorPaletteOutline } from "react-icons/io5";
 import { HiOutlineMail } from "react-icons/hi";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GiTakeMyMoney } from "react-icons/gi";
-import {
-  MdKeyboardDoubleArrowRight,
-  MdOutlineShoppingCart,
-} from "react-icons/md";
+import { MdOutlineShoppingCart } from "react-icons/md";
 import { FiHeart, FiLayers } from "react-icons/fi";
 import { AiOutlineShareAlt } from "react-icons/ai";
-import SlickCround from "../../components/common/SlickCround";
-import { Product } from "../../components/common";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { useScrollTop } from "../../hooks";
 import { useGetId } from "../../hooks/hooksApi/useGetId";
 import { AppURL } from "../../api/AppURL";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import Detail from "./Detail";
+import Recomended from "./Recomended";
+import Recently from "./Recently";
+import formatPrice from "../../utils/formathPrice";
+import { useDispatch } from "react-redux";
+import { byToCart } from "../../redux/cartSlice";
+import Skeleton from "react-loading-skeleton";
 const ProductDetail = () => {
-  const {slug} = useParams();
-  const products = Array(10).fill(null);
-  const { data, size, src, color, setColor, setSize, setSrc } = useGetId(slug);
-  const [des, setDes] = useState("des");
-  useScrollTop();
-  var settings = {
-    infinite: false,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    responsive: [
-      {
-        breakpoint: 1280,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 1,
-          infinite: true,
-        },
-      },
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 1,
-          infinite: true,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          initialSlide: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
-  const image = [
-    {
-      id: 1,
-      src: "https://demo-uminex.myshopify.com/cdn/shop/products/products_12_1.jpg?v=1672302207&width=360",
-    },
-    {
-      id: 2,
-      src: "https://demo-uminex.myshopify.com/cdn/shop/products/products_12_2.jpg?v=1672302207&width=360",
-    },
-  ];
-  const handleChangeSize = (e) => {
-    setSize(e.target.value);
-  };
-  const handleChangeColor = (e) => {
-    setColor(e.target.value);
-  };
+  const { slug } = useParams();
   const imageRef = useRef(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { data, src, setSrc } = useGetId(slug);
+  useEffect(() => {
+    window.scrollTo(0, 200);
+  }, [slug]);
+
+  const handleClickToCart = () => {
+    const newCart = {
+      name: data.name,
+      price: data.price,
+      id: data.id,
+      image: data?.images[0].image_url,
+      slug: data.slug,
+    };
+    dispatch(byToCart(newCart));
+    navigate("/cart");
+  };
   const handleClickImage = (e) => {
     const src = e.target.src;
     setSrc(src);
   };
-  const handleClickDesc = () => {
-    setDes("des");
-  };
-  const handleClickInfomation = () => {
-    setDes("infomation");
-  };
-  const handleClickShipping = () => {
-    setDes("shipping");
-  };
-  const handleClickReview = () => {
-    setDes("review");
-  };
+
   return (
     <section className="bg-[#F1F5F6]">
       <div className="max-w-[1410px] relative px-5 py-5 mx-auto ">
         <div>
           <ul className="flex items-center gap-3">
             <li>
-              <a href="">Home</a>
+              <Link to={"/"}>Home</Link>
             </li>
             <li>/</li>
             <li>
-              <a href="">{data?.name}</a>
+              <span>{data?.name}</span>
             </li>
           </ul>
         </div>
         <div className="bg-white p-5 mt-5">
           <div className="flex">
             <div className="basis-1/2 relative">
-              <div className="flex sticky top-10  p-5">
+              <div className="flex gap-4 sticky top-10  p-5">
                 <div className="relative w-full overflow-hidden">
-                  <Zoom>
-                    <img
-                      className="w-full origin-center object-cover h-full"
-                      ref={imageRef}
-                      src={src}
-                      alt=""
-                    />
-                  </Zoom>
+                  {data.images ? (
+                    <Zoom>
+                      <img
+                        className="w-full origin-center object-cover h-full"
+                        ref={imageRef}
+                        src={src}
+                        alt=""
+                      />
+                    </Zoom>
+                  ) : (
+                    <Skeleton width={"95%"} height={"500px"} />
+                  )}
                 </div>
                 <div className="mt-16">
                   <ul className="flex flex-col gap-2">
-                    {data?.images?.map((item) => (
-                      <li
-                        key={item.id}
-                        className={`border rounded-md p-[1px] overflow-hidden border-gray-200 cursor-pointer ${
-                          AppURL.ImageUrl + item.image_url === src
-                            ? "!border-blue-500"
-                            : ""
-                        }`}
-                      >
-                        <img
-                          onClick={handleClickImage}
-                          className="w-[70px]"
-                          src={AppURL.ImageUrl + item.image_url}
-                          alt=""
-                        />
-                      </li>
-                    ))}
+                    {data.images ? (
+                      data?.images?.map((item) => (
+                        <li
+                          key={item.id}
+                          className={`border rounded-md p-[1px] overflow-hidden border-gray-200 cursor-pointer ${
+                            AppURL.ImageUrl + item.image_url === src
+                              ? "!border-blue-500"
+                              : ""
+                          }`}
+                        >
+                          <img
+                            onClick={handleClickImage}
+                            className="w-[70px]"
+                            src={AppURL.ImageUrl + item.image_url}
+                            alt=""
+                          />
+                        </li>
+                      ))
+                    ) : (
+                      <Skeleton width={"70px"} height={"70px"} />
+                    )}
                   </ul>
                 </div>
               </div>
             </div>
             <div className="basis-1/2">
               <div className="mt-16">
-                <h1 className="text-2xl my-2">{data?.name}</h1>
+                <h1 className="text-2xl my-2">{
+                data?.name ? data?.name : <Skeleton width={"70%"} height={"25px"} />
+                
+                }</h1>
                 <div className="flex border-b items-center gap-3 py-3 pb-6">
                   <div className="flex items-center gapx-3 text-yellow-500">
                     {Array(5)
@@ -171,7 +133,7 @@ const ProductDetail = () => {
                   <span> Write a review</span>
                 </div>
                 <h3 className="text-red-500 text-3xl mt-5 font-semibold">
-                  {data?.price}
+                  {data?.price && formatPrice(data?.price)}
                 </h3>
                 <ul className="list-disc text-[13px] p-3 leading-7 text-gray-500">
                   <li>Screen Size 10.9 inch</li>
@@ -215,7 +177,7 @@ const ProductDetail = () => {
                     Contact us
                   </div>
                 </div>
-                <div className="text-gray-500 mt-5">
+                {/* <div className="text-gray-500 mt-5">
                   <div>
                     Size :{" "}
                     <span className="font-bold text-black uppercase">
@@ -243,7 +205,7 @@ const ProductDetail = () => {
                           {item.name}
                         </label>
                       ))}
-                    {/* <label
+                    <label
                       htmlFor="128gb"
                       className={`${
                         size == "128gb" && "border-blue-500"
@@ -290,12 +252,12 @@ const ProductDetail = () => {
                         id="512gb"
                       />
                       512GB
-                    </label> */}
+                    </label>
                   </div>
-                </div>
-                <div className="text-gray-500 my-5">
+                </div> */}
+                {/* <div className="text-gray-500 my-5">
                   <div>
-                    Color :{" "}
+                    Color :
                     <span className="font-bold text-black capitalize">
                       {color}
                     </span>
@@ -321,7 +283,7 @@ const ProductDetail = () => {
                           />
                         </label>
                       ))}
-                    {/* <label
+                    <label
                       htmlFor="white"
                       className={`${
                         color == "white" && "border-blue-500"
@@ -365,9 +327,9 @@ const ProductDetail = () => {
                         className="hidden"
                         id="purple"
                       />
-                    </label> */}
+                    </label>
                   </div>
-                </div>
+                </div> */}
                 <hr />
                 <div className="mt-5">
                   <p>Hurry Up! Only 5 Left in Stock!</p>
@@ -418,7 +380,10 @@ const ProductDetail = () => {
                   </div>
                 </div>
                 <div>
-                  <button className="w-full overflow-hidden py-3 flex gap-2 group justify-center items-center rounded-full font-bold text-white bg-blue-500 uppercase">
+                  <button
+                    onClick={handleClickToCart}
+                    className="w-full overflow-hidden py-3 flex gap-2 group justify-center items-center rounded-full font-bold text-white bg-blue-500 uppercase"
+                  >
                     <MdOutlineShoppingCart className="text-2xl -translate-y-11 group-hover:translate-y-[0] transition-all duration-300 bg-blue-500 " />{" "}
                     Add to Cart{" "}
                   </button>
@@ -445,95 +410,98 @@ const ProductDetail = () => {
                 </div>
                 <div className="border-b py-4">
                   <p className="flex items-center gap-2 text-gray-500">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M17.0178 10.3086C17.7428 10.6002 18.1928 11.4586 18.0261 12.2169L17.6844 13.7669C17.0928 16.4336 15.0011 18.3336 11.9844 18.3336H8.01775C5.00108 18.3336 2.90942 16.4336 2.31775 13.7669L1.97608 12.2169C1.80942 11.4586 2.25941 10.6002 2.98441 10.3086L4.16776 9.83355L8.75943 7.99189C9.55943 7.67523 10.4427 7.67523 11.2427 7.99189L15.8344 9.83355L17.0178 10.3086Z"
-                        stroke="#515D66"
-                        stroke-width="1.3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M10 18.3335V8.3335"
-                        stroke="#515D66"
-                        stroke-width="1.3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M15.8346 6.6665V9.83316L11.243 7.9915C10.443 7.67483 9.55964 7.67483 8.75964 7.9915L4.16797 9.83316V6.6665C4.16797 5.2915 5.29297 4.1665 6.66797 4.1665H13.3346C14.7096 4.1665 15.8346 5.2915 15.8346 6.6665Z"
-                        stroke="#515D66"
-                        stroke-width="1.3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M12.0846 4.1665H7.91797V2.49984C7.91797 2.0415 8.29297 1.6665 8.7513 1.6665H11.2513C11.7096 1.6665 12.0846 2.0415 12.0846 2.49984V4.1665Z"
-                        stroke="#515D66"
-                        stroke-width="1.3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                    </svg>
-                    Estimated Delivery: Sep 07 - Sep 11
-                  </p>
-                  <p className="flex items-center gap-2 my-3 text-gray-500">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M14.1328 5.1416C15.7995 6.29993 16.9495 8.1416 17.1828 10.2666"
-                        stroke="#515D66"
-                        stroke-width="1.3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M2.91016 10.3081C3.12682 8.19144 4.26016 6.34977 5.91016 5.18311"
-                        stroke="#515D66"
-                        stroke-width="1.3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M6.82422 17.4502C7.79089 17.9419 8.89089 18.2169 10.0492 18.2169C11.1659 18.2169 12.2159 17.9669 13.1576 17.5085"
-                        stroke="#515D66"
-                        stroke-width="1.3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M10.051 6.41654C11.3305 6.41654 12.3677 5.37933 12.3677 4.09987C12.3677 2.82041 11.3305 1.7832 10.051 1.7832C8.77158 1.7832 7.73438 2.82041 7.73438 4.09987C7.73438 5.37933 8.77158 6.41654 10.051 6.41654Z"
-                        stroke="#515D66"
-                        stroke-width="1.3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M4.0237 16.6001C5.30316 16.6001 6.34036 15.5629 6.34036 14.2835C6.34036 13.004 5.30316 11.9668 4.0237 11.9668C2.74424 11.9668 1.70703 13.004 1.70703 14.2835C1.70703 15.5629 2.74424 16.6001 4.0237 16.6001Z"
-                        stroke="#515D66"
-                        stroke-width="1.3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                      <path
-                        d="M15.9768 16.6001C17.2563 16.6001 18.2935 15.5629 18.2935 14.2835C18.2935 13.004 17.2563 11.9668 15.9768 11.9668C14.6974 11.9668 13.6602 13.004 13.6602 14.2835C13.6602 15.5629 14.6974 16.6001 15.9768 16.6001Z"
-                        stroke="#515D66"
-                        stroke-width="1.3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                    </svg>
+                    <div>
+                      <svg
+                        width={20}
+                        height={20}
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M17.0178 10.3086C17.7428 10.6002 18.1928 11.4586 18.0261 12.2169L17.6844 13.7669C17.0928 16.4336 15.0011 18.3336 11.9844 18.3336H8.01775C5.00108 18.3336 2.90942 16.4336 2.31775 13.7669L1.97608 12.2169C1.80942 11.4586 2.25941 10.6002 2.98441 10.3086L4.16776 9.83355L8.75943 7.99189C9.55943 7.67523 10.4427 7.67523 11.2427 7.99189L15.8344 9.83355L17.0178 10.3086Z"
+                          stroke="#515D66"
+                          strokeWidth="1.3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M10 18.3335V8.3335"
+                          stroke="#515D66"
+                          strokeWidth="1.3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M15.8346 6.6665V9.83316L11.243 7.9915C10.443 7.67483 9.55964 7.67483 8.75964 7.9915L4.16797 9.83316V6.6665C4.16797 5.2915 5.29297 4.1665 6.66797 4.1665H13.3346C14.7096 4.1665 15.8346 5.2915 15.8346 6.6665Z"
+                          stroke="#515D66"
+                          strokeWidth="1.3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M12.0846 4.1665H7.91797V2.49984C7.91797 2.0415 8.29297 1.6665 8.7513 1.6665H11.2513C11.7096 1.6665 12.0846 2.0415 12.0846 2.49984V4.1665Z"
+                          stroke="#515D66"
+                          strokeWidth="1.3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Estimated Delivery: Sep 07 - Sep 11
+                      <p />
+                      <p className="flex items-center gap-2 my-3 text-gray-500">
+                        <svg
+                          width={20}
+                          height={20}
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M14.1328 5.1416C15.7995 6.29993 16.9495 8.1416 17.1828 10.2666"
+                            stroke="#515D66"
+                            strokeWidth="1.3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M2.91016 10.3081C3.12682 8.19144 4.26016 6.34977 5.91016 5.18311"
+                            stroke="#515D66"
+                            strokeWidth="1.3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M6.82422 17.4502C7.79089 17.9419 8.89089 18.2169 10.0492 18.2169C11.1659 18.2169 12.2159 17.9669 13.1576 17.5085"
+                            stroke="#515D66"
+                            strokeWidth="1.3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M10.051 6.41654C11.3305 6.41654 12.3677 5.37933 12.3677 4.09987C12.3677 2.82041 11.3305 1.7832 10.051 1.7832C8.77158 1.7832 7.73438 2.82041 7.73438 4.09987C7.73438 5.37933 8.77158 6.41654 10.051 6.41654Z"
+                            stroke="#515D66"
+                            strokeWidth="1.3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M4.0237 16.6001C5.30316 16.6001 6.34036 15.5629 6.34036 14.2835C6.34036 13.004 5.30316 11.9668 4.0237 11.9668C2.74424 11.9668 1.70703 13.004 1.70703 14.2835C1.70703 15.5629 2.74424 16.6001 4.0237 16.6001Z"
+                            stroke="#515D66"
+                            strokeWidth="1.3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M15.9768 16.6001C17.2563 16.6001 18.2935 15.5629 18.2935 14.2835C18.2935 13.004 17.2563 11.9668 15.9768 11.9668C14.6974 11.9668 13.6602 13.004 13.6602 14.2835C13.6602 15.5629 14.6974 16.6001 15.9768 16.6001Z"
+                            stroke="#515D66"
+                            strokeWidth="1.3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </p>
+                    </div>
                     Return within 30 days of purchase. Taxes are non-refundable.
                   </p>
                 </div>
@@ -577,160 +545,10 @@ const ProductDetail = () => {
               </div>
             </div>
           </div>
-          <div className="mt-20">
-            <div className="border-b">
-              <ul className="flex justify-center items-center gap-8">
-                <li
-                  onClick={handleClickDesc}
-                  className={`${
-                    des == "des" &&
-                    "!text-blue-600 before:!left-0 before:!right-0"
-                  } cursor-pointer uppercase before:content-[''] before:block before:h-[2px] transition-all duration-200 py-4 before:bg-blue-500 text-gray-400 hover:text-blue-500 before:absolute before: before:bottom-0 before:left-1/2 before:right-1/2 hover:before:left-0 hover:before:right-0 before:transition-all before:duration-300 relative font-bold`}
-                >
-                  Description
-                </li>
-                <li
-                  onClick={handleClickInfomation}
-                  className={`${
-                    des == "infomation" &&
-                    "!text-blue-600 before:!left-0 before:!right-0"
-                  } cursor-pointer uppercase before:content-[''] before:block before:h-[2px] transition-all duration-200 py-4 before:bg-blue-500 text-gray-400 hover:text-blue-500 before:absolute before: before:bottom-0 before:left-1/2 before:right-1/2 hover:before:left-0 hover:before:right-0 before:transition-all before:duration-300 relative font-bold`}
-                >
-                  Additional Information
-                </li>
-                <li
-                  onClick={handleClickShipping}
-                  className={`${
-                    des == "shipping" &&
-                    "!text-blue-600 before:!left-0 before:!right-0"
-                  } cursor-pointer uppercase before:content-[''] before:block before:h-[2px] transition-all duration-200 py-4 before:bg-blue-500 text-gray-400 hover:text-blue-500 before:absolute before: before:bottom-0 before:left-1/2 before:right-1/2 hover:before:left-0 hover:before:right-0 before:transition-all before:duration-300 relative font-bold`}
-                >
-                  Shipping & Return
-                </li>
-                <li
-                  onClick={handleClickReview}
-                  className={`${
-                    des == "review" &&
-                    "!text-blue-600 before:!left-0 before:!right-0"
-                  } cursor-pointer uppercase before:content-[''] before:block before:h-[2px] transition-all duration-200 py-4 before:bg-blue-500 text-gray-400 hover:text-blue-500 before:absolute before: before:bottom-0 before:left-1/2 before:right-1/2 hover:before:left-0 hover:before:right-0 before:transition-all before:duration-300 relative font-bold`}
-                >
-                  Reviews ( 1 ){" "}
-                </li>
-              </ul>
-            </div>
-            <div className="p-10">
-              {des === "des" && (
-                <>
-                  <p className="leading-7 mb-5">
-                    iPad Air with a vibrant 10.9-inch Liquid Retina display.
-                    Breakthrough Apple M1 chip for faster performance, making
-                    iPad Air super-powerful for creativity and mobile gaming.
-                    Get Touch ID, an advanced camera, lightning-fast 5G2 and
-                    Wi-Fi 6, a USB-C port, and support for the Magic Keyboard
-                    and Apple Pencil (2nd generation).
-                  </p>
-                  <img
-                    src="https://cdn.shopify.com/s/files/1/0687/1177/6541/files/img_detail_0.png?v=1678077641"
-                    alt=""
-                  />
-                  <p className="my-5">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Libero pariatur quo odio amet doloribus omnis perferendis,
-                    consectetur vero quod. Sit omnis animi voluptas. Dolore cum
-                    cupiditate minus dicta quasi at.
-                  </p>
-                </>
-              )}
-              {}
-              {des === "infomation" && <h1>infomation</h1>}
-              {des === "shipping" && (
-                <div>
-                  <p className="font-bold uppercase text-[14px] my-3">
-                    Shipping
-                  </p>
-                  <ul className="text-gray-500 leading-7">
-                    <li>
-                      Complimentary ground shipping within 1 to 7 business days
-                    </li>
-                    <li>
-                      In-store collection available within 1 to 7 business days
-                    </li>
-                    <li>
-                      Next-day and Express delivery options also available
-                    </li>
-                    <li>
-                      Purchases are delivered in an orange box tied with a
-                      Bolduc ribbon, with the exception of certain items
-                    </li>
-                    <li>
-                      See the delivery FAQs for details on shipping methods,
-                      costs and delivery times
-                    </li>
-                    <li></li>
-                  </ul>
-                  <p className="font-bold uppercase text-[14px] my-3">
-                    RETURNS AND EXCHANGES
-                  </p>
-                  <ul className="text-gray-500 leading-7">
-                    <li>Easy and complimentary, within 14 days</li>
-                    <li>See conditions and procedure in our return FAQs</li>
-                  </ul>
-                </div>
-              )}
-              {des === "review" && <></>}
-            </div>
-          </div>
+          <Detail />
         </div>
-        <div className="my-10">
-          <div className=" bg-white rounded-md p-4 flex justify-between flex-wrap gap-y-4 my-2 items-center">
-            <div className="flex items-center">
-              <h5 className="uppercase font-bold text-[16px]">
-                Recomended for you
-              </h5>
-            </div>
-            <div>
-              <div className="text-sm leading-4 flex items-center justify-between">
-                <a
-                  href=""
-                  className="me-3 hover:text-[#2b38d1] group flex text-[12px] lg:text-[14px]  text-[#5a5a5a]"
-                >
-                  View all{" "}
-                  <MdKeyboardDoubleArrowRight className="text-[18px]  ms-1 group-hover:translate-x-2 transition-all duration-300" />
-                </a>
-              </div>
-            </div>
-          </div>
-          <SlickCround settings={settings}>
-            {products.map((item, index) => {
-              return <Product key={index} deals={true} />;
-            })}
-          </SlickCround>
-        </div>
-        <div className="my-20">
-          <div className=" bg-white rounded-md p-4 flex justify-between flex-wrap gap-y-4 my-2 items-center">
-            <div className="flex items-center">
-              <h5 className="uppercase font-bold text-[16px]">
-                RECENTLY VIEWED PRODUCTS
-              </h5>
-            </div>
-            <div>
-              <div className="text-sm leading-4 flex items-center justify-between">
-                <a
-                  href=""
-                  className="me-3 hover:text-[#2b38d1] group flex text-[12px] lg:text-[14px]  text-[#5a5a5a]"
-                >
-                  View all{" "}
-                  <MdKeyboardDoubleArrowRight className="text-[18px]  ms-1 group-hover:translate-x-2 transition-all duration-300" />
-                </a>
-              </div>
-            </div>
-          </div>
-          <SlickCround settings={settings}>
-            {products.map((item, index) => {
-              return <Product key={index} deals={true} />;
-            })}
-          </SlickCround>
-        </div>
+        <Recomended productId={data.category_id} />
+        <Recently product={data} />
       </div>
     </section>
   );

@@ -1,7 +1,7 @@
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { Product } from "../../components/common";
 import SlickCround from "../../components/common/SlickCround";
-import { productApi } from "../../api/productApi";
+import { productApi } from "../../api/site/productApi";
 import { useApiCall } from "../../hooks";
 const Recomended = () => {
   const settings = {
@@ -56,6 +56,7 @@ const Recomended = () => {
     [],
     []
   );
+  console.log("recomended", data);
   const listProduct = data?.data?.data.data || [];
   return (
     <div className="my-10">

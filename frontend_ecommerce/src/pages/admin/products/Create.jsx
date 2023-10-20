@@ -1,13 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
-import { productApi } from "../../../api/productApi";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { File, Input, Select, Textarea } from "../../../components/admin/form";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useApiCall } from "../../../hooks";
-import { categoriesApi } from "../../../api/categoriesApi";
-import { brandApi } from "../../../api/brandApi";
+import { categoriesApi } from "../../../api/admin/categoriesApi";
+import { brandApi } from "../../../api/admin/brandApi";
+import { productApi } from "../../../api/admin/productApi";
 
 const Create = () => {
   const navigate = useNavigate();
@@ -58,6 +58,9 @@ const Create = () => {
       toast.error("Thêm sản phẩm thất bại");
     }
   };
+  
+  const listCategory = categories?.data?.data?.data;
+  const listBrand = brands?.data?.data?.data;
   return (
     <div className="m-5">
       <Formik
@@ -221,8 +224,8 @@ const Create = () => {
                       <option value="" selected>
                         Danh mục
                       </option>
-                      {categories?.data?.length > 0 &&
-                        categories?.data?.map((category) => (
+                      {listCategory?.length > 0 &&
+                        listCategory?.map((category) => (
                           <option key={category.id} value={category.id}>
                             {category.name}
                           </option>
@@ -237,8 +240,8 @@ const Create = () => {
                         Thương hiệu
                       </option>
                      {
-                       brands?.data?.length > 0 &&
-                       brands?.data?.map((brand) => (
+                      listBrand?.length > 0 &&
+                      listBrand?.map((brand) => (
                          <option key={brand.id} value={brand.id}>
                            {brand.name}
                          </option>

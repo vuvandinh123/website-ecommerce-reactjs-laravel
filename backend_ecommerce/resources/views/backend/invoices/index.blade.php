@@ -204,7 +204,6 @@
                             </style>
                             <script>
                                 function handleClickPrint() {
-                                    const prin = document.getElementById('print')
                                     window.print();
                                 }
                             </script>
