@@ -1,19 +1,20 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Order from "./Order";
 import CardOrder from "./CardOrder";
-import { useCart } from "../../hooks";
+import { useCart, useScrollTop } from "../../hooks";
+import { toast } from "react-toastify";
 const CartPage = () => {
   const { cartAr } = useSelector((state) => state.cart);
-
+  useScrollTop();
   const [checkout, setCheckout] = useState({
     coupon: 0,
     shipping: 1,
     note: "",
     total: 0,
   });
-  const {totalPrice,amount,deleteCartAll} = useCart();
+  const { totalPrice, amount, deleteCartAll } = useCart();
   useEffect(() => {
     if (cartAr.length > 0) {
       localStorage.setItem("cart", JSON.stringify(cartAr));
@@ -23,7 +24,7 @@ const CartPage = () => {
 
   const handleClickCheckout = (e) => {
     e.preventDefault();
-    
+
     // dispatch(
     //   setOrder({
     //     ...checkout,
@@ -32,8 +33,15 @@ const CartPage = () => {
     //     total: totalCart2,
     //   })
     // );
+    const token = JSON.parse(sessionStorage.getItem("token"));
+    if (!token) {
+      sessionStorage.setItem("url", '/checkout');
+      toast.warning("Bạn cần đăng nhập để tiếp tục");
+      navigate("/login");
 
-    navigate("/checkout");
+    } else {
+      navigate("/checkout");
+    }
   };
   return (
     <div className="">
@@ -64,7 +72,7 @@ const CartPage = () => {
               </div>
               <div className="uppercase  font-bold"></div>
             </div>
-            <CardOrder/>
+            <CardOrder />
             <div className="py-5 border-b border-t flex justify-between items-center">
               <Link
                 to={"/categories/all"}
@@ -99,7 +107,11 @@ const CartPage = () => {
             </div>
           </div>
           <div className="basis-1/4 rounded-xl border-2 border-blue-500 p-2">
-            <Order totalPrice={totalPrice} amount={amount} handleClickCheckout={handleClickCheckout}/>
+            <Order
+              totalPrice={totalPrice}
+              amount={amount}
+              handleClickCheckout={handleClickCheckout}
+            />
           </div>
         </div>
       </div>

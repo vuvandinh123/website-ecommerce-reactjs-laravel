@@ -1,15 +1,9 @@
 import { useParams } from "react-router-dom";
 import { AppURL } from "../../api/AppURL";
-import { postApi } from "../../api/site/postApi";
 import { useApiCall } from "../../hooks";
 import { ImageLoader, SiderbarBlog } from "../../components/common";
-import {
-  AiFillGoogleCircle,
-  AiFillInstagram,
-  AiFillTwitterCircle,
-  AiOutlineSearch,
-} from "react-icons/ai";
-import { BsFacebook } from "react-icons/bs";
+import { postApi } from "../../api/site/postApi";
+
 
 const PostDetail = () => {
   const { slug } = useParams();
@@ -40,8 +34,8 @@ const PostDetail = () => {
             <p className="my-3 text-blue-400">Category</p>
             <h1 className="text-3xl font-bold mb-10">{post?.title}</h1>
             <div className="text-[13px]">{post?.compact}</div>
-            <div className="my-10 text-gray-500 leading-8 text-base">
-              {post?.content}
+            <div className="my-10 overflow-hidden text-gray-500 leading-8 text-base">
+              <div dangerouslySetInnerHTML={{ __html: post?.content }} />
             </div>
           </div>
         </div>

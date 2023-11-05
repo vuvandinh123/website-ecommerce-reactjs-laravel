@@ -18,7 +18,7 @@ const CardOrder = () => {
               <div className="py-5 border-b border-t flex justify-between items-center">
                 <div className=" basis-2/5 flex gap-x-3">
                   <div className="w-[100px] overflow-hidden">
-                    <Link to={"/products"}>
+                    <Link to={`/products/${item.slug}`}>
                       <img
                         className="w-full hover:scale-110 transition-all duration-200"
                         src={AppURL.ImageUrl + item.image}
@@ -30,7 +30,7 @@ const CardOrder = () => {
 
                   <div>
                     <h5 className="text-base mt-3">
-                      <Link to={"/products"} className="hover:text-blue-500">
+                      <Link to={`/products/${item.slug}`} className="hover:text-blue-500">
                         Wireless Controller Series Mac/Windows
                       </Link>{" "}
                     </h5>

@@ -6,14 +6,14 @@ import { categoriesApi } from "../../../api/admin/categoriesApi";
 const Filter = ({ setFilter, filter }) => {
   const { data: categories } = useApiCall(
     async () => {
-      return await categoriesApi.getAll();
+      return await categoriesApi.getAll({limit: 100});
     },
     [],
     []
   );
   const { data: brands } = useApiCall(
     async () => {
-      return await brandApi.getAll();
+      return await brandApi.getAll({limit: 100});
     },
     [],
     []

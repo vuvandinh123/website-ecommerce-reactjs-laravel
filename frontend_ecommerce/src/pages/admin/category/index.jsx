@@ -2,11 +2,14 @@ import { AppURL } from "../../../api/AppURL";
 import { useApiCall } from "../../../hooks";
 import NotImage from "../../../assets/image/icon-image-not-found-free-vector.jpg";
 import { Link } from "react-router-dom";
-import {  useState } from "react";
+import { useState } from "react";
 import Pagination from "../../../components/admin/Pagination";
 import { toast } from "react-toastify";
 import { categoriesApi } from "../../../api/admin/categoriesApi";
 import SkeletonCategory from "./SkeletonCategory";
+import formathDate from "../../../utils/formathDate";
+import { BiEdit } from "react-icons/bi";
+import { RiDeleteBin2Line } from "react-icons/ri";
 const CategoryAdmin = () => {
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState("");
@@ -19,15 +22,18 @@ const CategoryAdmin = () => {
     search: "",
     sortBy: "",
   });
-
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     setFilter({ ...filter, search: search });
   };
   const handleDeleteClick = async (id) => {
-    await categoriesApi.delete(id);
-    setDeleteId(id);
-    toast.success("Xoá sản phẩm thành công");
+    const res = await categoriesApi.delete(id);
+    if (res.data.status == 200) {
+      setDeleteId(id);
+      toast.success("Xoá danh muc thành công");
+    } else {
+      toast.error("Xoá danh mục thất bại sản phẩm vẫn tồn tại trong danh mục");
+    }
   };
   const handleStatusClick = async (id) => {
     await categoriesApi.status(id);
@@ -146,7 +152,7 @@ const CategoryAdmin = () => {
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <p className="text-gray-900 whitespace-no-wrap">
-                            {item.created_at}
+                            {formathDate(item.created_at)}
                           </p>
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -172,13 +178,13 @@ const CategoryAdmin = () => {
                               to={`${item.id}/edit`}
                               className="text-indigo-600 hover:text-indigo-900"
                             >
-                              Edit
+                              <BiEdit className=" text-xl font-bold" />
                             </Link>
                             <button
                               onClick={() => handleDeleteClick(item.id)}
                               className="text-red-400 hover:text-red-600"
                             >
-                              Delete
+                              <RiDeleteBin2Line className="text-xl font-bold" />
                             </button>
                           </div>
                         </td>

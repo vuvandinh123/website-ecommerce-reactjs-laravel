@@ -3,18 +3,19 @@ import { productApi } from "../../../api/admin/productApi";
 
 import { useApiCall } from "../../../hooks";
 import { Link, useParams } from "react-router-dom";
+import formathDate from "../../../utils/formathDate";
 
 const Show = () => {
   const { slug } = useParams();
-  const { data, loading } = useApiCall(
+  const { data } = useApiCall(
     async () => {
       return await productApi.get(slug);
     },
     [],
     []
   );
+
   const product = data?.data;
-  console.log(product);
   return (
     <div className="m-5">
       {/* component */}
@@ -25,7 +26,12 @@ const Show = () => {
             <span className="text-xs">Show products item</span>
           </div>
           <div className="flex items-center justify-between">
-            <Link to={"/admin/products"} className="bg-blue-500 text-white px-3 py-2 rounded">Quay lại</Link>
+            <Link
+              to={"/admin/products"}
+              className="bg-blue-500 text-white px-3 py-2 rounded"
+            >
+              Quay lại
+            </Link>
           </div>
         </div>
       </div>
@@ -125,7 +131,11 @@ const Show = () => {
                     <th className="w-52 text-left uppercase px-6 py-4">
                       Chi tiết
                     </th>
-                    <td className="px-6 py-4">{product?.detail}</td>
+                    <td className="px-6 py-4">
+                      <div
+                        dangerouslySetInnerHTML={{ __html: product?.detail }}
+                      />
+                    </td>
                   </tr>
                   <tr className="border-b">
                     <th className="w-52 text-left uppercase px-6 py-4">
@@ -149,7 +159,9 @@ const Show = () => {
                     <th className="w-52 text-left uppercase px-6 py-4">
                       Ngày tạo
                     </th>
-                    <td className="px-6 py-4">{product?.created_at}</td>
+                    <td className="px-6 py-4">
+                      {formathDate(product?.created_at)}
+                    </td>
                   </tr>
                 </tbody>
               </table>

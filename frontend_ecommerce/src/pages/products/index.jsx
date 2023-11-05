@@ -29,7 +29,7 @@ const Products = () => {
     navigate(`?${queryParams.toString()}`);
   }, [params, navigate]);
   const limi = searchParams.get("limit");
-  const [limit, setLimit] = useState(Number(limi) || 5);
+  const [limit, setLimit] = useState(Number(limi) || 10);
   const [price, setPrice] = useState({
     min: null,
     max: null,
@@ -149,8 +149,8 @@ const Products = () => {
             <div
               onClick={() => {
                 if (listProduct.length < totalProduct) {
-                  setLimit(limit + 5);
-                  const params = "?limit=" + (limit + 5);
+                  setLimit(limit + 10);
+                  const params = "?limit=" + (limit + 10);
                   navigate(params);
                 }
               }}

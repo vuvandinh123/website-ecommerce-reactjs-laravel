@@ -6,6 +6,7 @@ import { useApiCall } from "../../hooks";
 import { productApi } from "../../api/site/productApi";
 import { AppURL } from "../../api/AppURL";
 import formatPrice from "../../utils/formathPrice";
+import { Link } from "react-router-dom";
 const TopSellingProducts = () => {
   const settings = {
     dots: false,
@@ -79,7 +80,7 @@ const TopSellingProducts = () => {
               <div className="flex bg-white">
                 <div className="relative group p-1">
                   <div className="group/image w-[150px] md:w-[180px]">
-                    <a href="" className="block relative min-h-[160px]">
+                    <Link to={`/products/${item.slug}`} className="block relative min-h-[160px]">
                       <ImageLoader
                         src={AppURL.ImageUrl + item?.images[0]?.image_url}
                         className={`group-hover/image:opacity-0 transition-all duration-400 object-contain`}
@@ -92,7 +93,7 @@ const TopSellingProducts = () => {
                           alt=""
                         />
                       )}
-                    </a>
+                    </Link>
                   </div>
 
                   <div className="absolute top-20 right-2 opacity-0 group-hover:top-10 group-hover:opacity-100 transition-all duration-500 ">
@@ -115,9 +116,9 @@ const TopSellingProducts = () => {
                 </div>
                 <div className="py-5 px-2 flex flex-col">
                   <h3 className="">
-                    <a className="font-[400]" href="">
+                    <Link to={`/products/${item.slug}`} className="font-[400]" >
                       {item.name}
-                    </a>
+                    </Link>
                   </h3>
                   <div className="flex items-center md:my-3 my-1">
                     <div className="flex items-center gapx-3 text-yellow-500">

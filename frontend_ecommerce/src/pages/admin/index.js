@@ -14,3 +14,7 @@ export {default as BrandShow} from './brand/Show';
 export {default as BrandAdmin} from './brand';
 export {default as BrandCreate} from './brand/Create';
 export {default as BrandEdit} from './brand/Edit';
+export {default as OrderAdmin} from './order';
+export {default as PageAdmin} from './page';
+export {default as PageCreate} from './page/Create';
+export {default as MenuAdmin} from './menu';

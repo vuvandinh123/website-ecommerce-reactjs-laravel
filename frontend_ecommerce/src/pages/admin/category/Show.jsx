@@ -3,6 +3,7 @@ import { categoriesApi } from "../../../api/admin/categoriesApi";
 
 import { useApiCall } from "../../../hooks";
 import { Link, useParams } from "react-router-dom";
+import formathDate from "../../../utils/formathDate";
 
 const Show = () => {
   const { id } = useParams();
@@ -106,7 +107,7 @@ const Show = () => {
                     <th className="w-52 text-left uppercase px-6 py-4">
                       Ngày tạo
                     </th>
-                    <td className="px-6 py-4">{category?.created_at}</td>
+                    <td className="px-6 py-4">{formathDate(category?.created_at)}</td>
                   </tr>
                 </tbody>
               </table>

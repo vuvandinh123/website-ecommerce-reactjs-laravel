@@ -1,7 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useState } from "react";
-import { File, Input, Select, Textarea } from "../../../components/admin/form";
+import { useRef, useState } from "react";
+import {
+  Editorjs,
+  File,
+  Input,
+  Select,
+  Textarea,
+} from "../../../components/admin/form";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useApiCall } from "../../../hooks";
@@ -12,6 +18,9 @@ import { productApi } from "../../../api/admin/productApi";
 const Create = () => {
   const navigate = useNavigate();
   const [images, setImage] = useState([]);
+  const editorRef = useRef(null);
+  const detailRef = useRef(null);
+
   const { data: categories } = useApiCall(
     async () => {
       return await categoriesApi.getAll();
@@ -48,6 +57,8 @@ const Create = () => {
     fields.forEach((field) => {
       formData.append(field, values[field]);
     });
+    formData.append("detail", detailRef.current.getContent());
+    formData.append("description", editorRef.current.getContent());
     try {
       const res = await productApi.create(formData);
       if (res.status === 200) {
@@ -58,7 +69,7 @@ const Create = () => {
       toast.error("Thêm sản phẩm thất bại");
     }
   };
-  
+
   const listCategory = categories?.data?.data?.data;
   const listBrand = brands?.data?.data?.data;
   return (
@@ -67,12 +78,12 @@ const Create = () => {
         initialValues={{
           name: "",
           price: "",
-          description: "",
+          // description: "",
           brand: "",
           category: "",
           wholesale_price: "",
           retail_price: "",
-          detail: "",
+          // detail: "",
           metakey: "",
           metadesc: "",
           metatitle: "",
@@ -81,12 +92,12 @@ const Create = () => {
         validationSchema={Yup.object({
           name: Yup.string().required("Name is required"),
           price: Yup.string().required("Price is required"),
-          description: Yup.string().required("Description is required"),
+          // description: Yup.string().required("Description is required"),
           brand: Yup.string().required("Brand is required"),
           category: Yup.string().required("Category is required"),
           wholesale_price: Yup.string().required("Wholesale price is required"),
           retail_price: Yup.string().required("Retail price is required"),
-          detail: Yup.string().required("Detail is required"),
+          // detail: Yup.string().required("Detail is required"),
           metakey: Yup.string().required("Metakey is required"),
           metadesc: Yup.string().required("Metadesc is required"),
           metatitle: Yup.string().required("Metatitle is required"),
@@ -156,20 +167,30 @@ const Create = () => {
                         name="retail_price"
                       />
                     </div>
-                    <Textarea
+                    {/* <Textarea
                       label="Mô tả sản phẩm"
                       cols="30"
                       rows="2"
                       name="description"
                       className="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-3 text-[14px] font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+                    /> */}
+                    <Editorjs
+                      editorRef={editorRef}
+                      label={"Mô tả sản phẩm"}
+                      init={{ height: 300, menubar: false }}
                     />
-                    <Textarea
+                    <Editorjs
+                      editorRef={detailRef}
+                      label={"Chi tiếp sản phẩm"}
+                      init={{ height: 500, menubar: true }}
+                    />
+                    {/* <Textarea
                       label="Chi tiếp sản phẩm"
                       cols="30"
                       name="detail"
                       rows="5"
                       className="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-3 text-[14px] font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-                    />
+                    /> */}
                   </div>
                 </div>
                 <div className="bg-white p-5 my-4">
@@ -239,14 +260,12 @@ const Create = () => {
                       <option value="" selected>
                         Thương hiệu
                       </option>
-                     {
-                      listBrand?.length > 0 &&
-                      listBrand?.map((brand) => (
-                         <option key={brand.id} value={brand.id}>
-                           {brand.name}
-                         </option>
-                       ))
-                     }
+                      {listBrand?.length > 0 &&
+                        listBrand?.map((brand) => (
+                          <option key={brand.id} value={brand.id}>
+                            {brand.name}
+                          </option>
+                        ))}
                     </Select>
                     <Select
                       label={"Trạng thái"}

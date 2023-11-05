@@ -1,15 +1,16 @@
 import imageHeart from "../../../../public/heart.svg";
 import imageCart from "../../../../public/cart.svg";
-import {  useRef } from "react";
+import { useRef } from "react";
 import { HiOutlineTag } from "react-icons/hi";
 import Cart from "../Cart";
-import {  useOffcanvas } from "../../../hooks";
+import { useOffcanvas } from "../../../hooks";
 import Favourite from "../Favourite";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Topbar from "./Topbar";
 import Search from "./Search";
 import User from "./User";
 import Navigate from "./Navigate";
+import { Link } from "react-router-dom";
 const Header = () => {
   const cartRef = useRef(null);
   const favouriteRef = useRef(null);
@@ -27,15 +28,15 @@ const Header = () => {
   let totalCart = 0;
   let qtyCart = 0;
   cartAr.forEach((item) => {
-    totalCart += item.total
-    qtyCart += item.qty
-  })
+    totalCart += item.total;
+    qtyCart += item.qty;
+  });
 
   const { isOpen: isOpenCart, setIsOpen: setIsOpenCart1 } = useOffcanvas(
     false,
     cartRef,
-    cartIconRef,
-  ); 
+    cartIconRef
+  );
   const { isOpen: isOpenFav, setIsOpen: setIsOpenFav } = useOffcanvas(
     false,
     favouriteRef,
@@ -46,7 +47,6 @@ const Header = () => {
   };
   const handleClickShowCart = () => {
     setIsOpenCart1(!isOpenCart);
-
   };
   const handleClickShowFav = () => {
     setIsOpenFav(!isOpenFav);
@@ -54,7 +54,7 @@ const Header = () => {
   return (
     <>
       <header className="">
-        <Topbar/>
+        <Topbar />
         <hr />
         <div className="flex max-w-[1410px] px-5 py-5 mx-auto justify-between items-center">
           <div
@@ -64,15 +64,21 @@ const Header = () => {
           >
             <i className="fa-solid fa-bars text-[25px]"></i>
           </div>
-          <div className="w-[150px] shrink-0">
-            <img
+          <div className="w-[150px] shrink-0 text-3xl  gap-1">
+            {/* <img
               src="https://demo-uminex.myshopify.com/cdn/shop/files/Logo_fb7c7c58-1b8f-455e-8b97-56d607743b37_145x@2x.png?v=1679893103"
               alt=""
-            />
+            /> */} 
+            <Link to={"/"}>
+              <span className="font-bold ">VVD</span>{" "}
+              <span className="text-[#4369ff] font-bold  border-b-blue-600 border-b-2 ">
+                Shop
+              </span>
+            </Link>
           </div>
-          <Search/>
+          <Search />
           <div className="flex">
-            <User/>
+            <User />
             <div
               onClick={handleClickShowFav}
               ref={favouriteIconRef}
@@ -111,9 +117,13 @@ const Header = () => {
         </div>
         {/*  */}
         <hr />
-        <Navigate menuRef={menuRef} setIsOpenMenu={setIsOpenMenu} isOpenMenu={isOpenMenu}/>
+        <Navigate
+          menuRef={menuRef}
+          setIsOpenMenu={setIsOpenMenu}
+          isOpenMenu={isOpenMenu}
+        />
         <hr />
-        <Cart cart={isOpenCart}  setCart={setIsOpenCart1} cartRef={cartRef} />
+        <Cart cart={isOpenCart} setCart={setIsOpenCart1} cartRef={cartRef} />
         <Favourite
           isOpen={isOpenFav}
           setIsOpen={setIsOpenFav}

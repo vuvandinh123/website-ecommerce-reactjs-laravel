@@ -56,7 +56,6 @@ const Recomended = () => {
     [],
     []
   );
-  console.log("recomended", data);
   const listProduct = data?.data?.data.data || [];
   return (
     <div className="my-10">

@@ -1,14 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import { File, Input, Select } from "../../../components/admin/form";
+import {  Input, Select } from "../../../components/admin/form";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { useApiCall } from "../../../hooks";
-import { categoriesApi } from "../../../api/admin/categoriesApi";
 import { brandApi } from "../../../api/admin/brandApi";
+import { adminApi } from "../../../api/admin/adminApi";
 
 const Create = () => {
+  const url = "/brands";
   const navigate = useNavigate();
   const [images, setImage] = useState([]);
   const [src, setSrc] = useState();
@@ -29,7 +29,7 @@ const Create = () => {
       formData.append(field, values[field]);
     });
     try {
-      const res = await brandApi.create(formData);
+      const res = await adminApi.create(url,formData);
       if (res.status === 200) {
         toast.success("Thêm sản phẩm thành công");
         navigate("/admin/brands");

@@ -1,17 +1,23 @@
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppURL } from "../../api/AppURL";
-import { useAuth } from "../../hooks";
+import { useAuth, useScrollTop } from "../../hooks";
 import { Input } from "../../components/admin/form";
 import * as Yup from "yup";
 import { ErrorMessage, Field, Form, Formik } from "formik";
+import { checkOutApi } from "../../api/site/checkOutApi";
+import { ToastContainer, toast } from "react-toastify";
 
 const CheckoutPage = () => {
   const { orderAr } = useSelector((state) => state.checkout);
   const { cartAr } = useSelector((state) => state.cart);
+  const navigate = useNavigate();
+  useScrollTop();
   const token = JSON.parse(sessionStorage.getItem("token"));
   const { user } = useAuth(token?.access_token);
+  console.log(user);
+  document.body.style.overflow = "auto"
   if(!user){
     return "loading..."
   }
@@ -22,8 +28,39 @@ const CheckoutPage = () => {
   if (orderAr.coupon) {
     var total = totalCart - (totalCart * orderAr.coupon) / 100;
   }
+  console.log(cartAr);
+  const handleSubmitCheckOut =async (values) => {
+    const product = []
+    for (let i = 0; i < cartAr.length; i++) {
+      const element = cartAr[i];
+      product.push({
+        product_id: element.id,
+        quantity: element.qty,
+        price: element.price,
+        shipping_id:1,
+      })
+    }
+    const params = {
+      ...values,
+      order_detail:product,
+    }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${
+          JSON.parse(sessionStorage.getItem("token"))?.access_token
+        }`,
+        accept: "application/json",
+      },
+    }
+    const res = await checkOutApi.create(params,config);
+    if(res.data.status ==200){
+      toast.success("Đặt hàng thành công")
+      navigate('/order-details')
+    }
+  }
   return (
     <div className="">
+
       <div className=" h-36 text-black flex justify-center items-center flex-col gap-y-3">
         <h2 className="text-4xl font-semibold">Check out</h2>
         <div>
@@ -54,11 +91,11 @@ const CheckoutPage = () => {
           <div className="basis-3/5">
             <Formik
               initialValues={{
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email ,
-                phone: user.phone || '',
-                address: user.address || '',
+                firstName: user?.firstName || '',
+                lastName: user?.lastName || '',
+                email: user?.email || '',
+                phone: user?.phone || '',
+                address: user?.address || '',
               }}
               validationSchema={Yup.object({
                 email: Yup.string().email().required("Email is required"),
@@ -67,7 +104,7 @@ const CheckoutPage = () => {
                 lastName: Yup.string().required("Last name is required"),
                 address: Yup.string().required("Last name is required"),
               })}
-              onSubmit={(values) => {console.log(values);}}
+              onSubmit={(values) => handleSubmitCheckOut(values)}
             >
               <Form>
                 <div>

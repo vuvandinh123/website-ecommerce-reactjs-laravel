@@ -10,3 +10,5 @@ export {default as CartPage} from './cart';
 export {default as CheckoutPage} from './checkout';
 export {default as PostPage} from './post';
 export {default as PostDetailPage} from './postDetail';
+export {default as OrderDetailPage} from './orderDetail';
+export {default as PageDetail} from './page';

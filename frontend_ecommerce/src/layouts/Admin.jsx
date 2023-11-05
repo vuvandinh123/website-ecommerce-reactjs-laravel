@@ -1,19 +1,19 @@
-import { Outlet } from "react-router-dom";
 import HeaderAdmin from "../components/admin/Header";
 import FooterAdmin from "../components/admin/Footer";
 import Siderbar from "../components/admin/Siderbar";
-import { ToastContainer } from "react-toastify";
 import { useState } from "react";
 import { Login } from "../pages/admin";
 import { useAuth, useToken } from "../hooks";
+import { checkPropTypes } from "prop-types";
 
-const Admin = () => {
+const LayoutAdmin = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { token, setToken } = useToken();
   const { user } = useAuth(token);
-  if (!token || !user?.role || user?.role !== 1) {
-    return <Login setToken={setToken} />;
+  if (!token) {
+    return <Login setToken={setToken} user={user} />;
   }
+
   return (
     <div>
       <HeaderAdmin
@@ -30,13 +30,14 @@ const Admin = () => {
           id="content"
           className=" bg-gray-100 w-full transition-all duration-200 ease-in-out"
         >
-          <Outlet />
+          {children}
         </div>
       </div>
       <FooterAdmin />
-      <ToastContainer />
     </div>
   );
 };
-
-export default Admin;
+LayoutAdmin.propTypes = {
+  children: checkPropTypes.node,
+};
+export default LayoutAdmin;

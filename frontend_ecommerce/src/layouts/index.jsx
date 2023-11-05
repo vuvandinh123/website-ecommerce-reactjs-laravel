@@ -1,17 +1,18 @@
-import { Outlet } from "react-router-dom";
+import ToastOrder from "../components/baskets/ToastOrder";
 import { Footer, Header, NavBottom } from "../components/common";
-import { ToastContainer } from 'react-toastify';
-const Layout = () => {
+import { checkPropTypes } from "prop-types";
+const Layout = ({ children }) => {
   return (
     <div>
-      
       <Header />
-      <Outlet />
+      {children}
       <Footer />
       <NavBottom />
-      <ToastContainer />
+      <ToastOrder />
     </div>
   );
 };
-
+Layout.propTypes = {
+  children: checkPropTypes.node,
+};
 export default Layout;

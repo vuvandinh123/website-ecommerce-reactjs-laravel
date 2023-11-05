@@ -25,7 +25,7 @@ class PostController extends Controller
         $query = Post::query();
         $page = $request->input('page', 1);
         $limit = $request->input('limit', 10);
-        $posts = $query->orderBy('id', 'desc')->paginate($limit, ['*'], 'page', $page);
+        $posts = $query->where([['status',1],['type','post']])->orderBy('id', 'desc')->paginate($limit, ['*'], 'page', $page);
         return response()->json(['status' => 200, 'message' => "query success", 'data' => $posts]);
     }
     public function search(Request $request)

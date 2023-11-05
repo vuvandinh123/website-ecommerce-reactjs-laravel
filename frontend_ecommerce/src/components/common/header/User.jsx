@@ -8,6 +8,7 @@ import { TfiShoppingCartFull } from "react-icons/tfi";
 import { useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { IoBagCheckOutline } from "react-icons/io5";
 const NoUser = () => {
   return (
     <>
@@ -102,7 +103,9 @@ const User = () => {
               )}
             </div>
             <Link to={""} className="text-center py-3 ">
-              <p className="mt-2 font-semibold capitalize">{user?.firstName + " " + user?.lastName}</p>
+              <p className="mt-2 font-semibold capitalize">
+                {user?.firstName + " " + user?.lastName}
+              </p>
               <p className="pb-2 text-[12px] text-gray-400 mt-1">
                 {user?.email}
               </p>
@@ -117,12 +120,20 @@ const User = () => {
                 Cart
               </Link>
               <Link
+                to={"/order-details"}
+                className="flex hover:text-black text-gray-600  items-center gap-2 py-1 text-base"
+              >
+                <IoBagCheckOutline />
+                Purchased Order
+              </Link>
+              <Link
                 to={""}
                 className="flex hover:text-black text-gray-600  items-center gap-2 py-1 text-base"
               >
                 <AiOutlineSetting />
                 Setting
               </Link>
+              
               <button
                 onClick={handleLogoutClick}
                 className="flex hover:text-red-700 text-red-500  items-center gap-2 py-1 text-base"

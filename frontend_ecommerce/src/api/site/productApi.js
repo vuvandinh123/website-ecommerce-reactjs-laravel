@@ -27,6 +27,6 @@ export const productApi = {
     },
     search(id,params) {
         var url = `products/search/${id}`;
-        return axiosInstance.get(url,{ params })
+        return axiosInstance.post(url, params )
     },
 }

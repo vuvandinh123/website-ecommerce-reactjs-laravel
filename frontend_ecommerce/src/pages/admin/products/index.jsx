@@ -1,13 +1,15 @@
 import { AppURL } from "../../../api/AppURL";
-import { useApiCall, useOffcanvas } from "../../../hooks";
+import { useApiCall } from "../../../hooks";
 import NotImage from "../../../assets/image/icon-image-not-found-free-vector.jpg";
 import { Link } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Pagination from "../../../components/admin/Pagination";
 import Filter from "./Filter";
 import SkeletonProduct from "./SkeletonProduct";
 import { productApi } from "../../../api/admin/productApi";
 import { toast } from "react-toastify";
+import { RiDeleteBin2Line } from "react-icons/ri";
+import { BiEdit, BiShowAlt } from "react-icons/bi";
 const ProductAdmin = () => {
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState("");
@@ -170,11 +172,7 @@ const ProductAdmin = () => {
                             {product?.brand?.name}
                           </p>
                         </td>
-                        {/* <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <p className="text-gray-900 whitespace-no-wrap">
-                            {product.created_at}
-                          </p>
-                        </td> */}
+                       
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <span
                             onClick={() => handleStatusClick(product.id)}
@@ -198,13 +196,13 @@ const ProductAdmin = () => {
                               to={`${product.slug}/edit`}
                               className="text-indigo-600 hover:text-indigo-900"
                             >
-                              Edit
+                              <BiEdit className=" text-xl font-bold" />
                             </Link>
                             <button
                               onClick={() => handleDeleteClick(product.id)}
                               className="text-red-400 hover:text-red-600"
                             >
-                              Delete
+                              <RiDeleteBin2Line className="text-xl font-bold" />
                             </button>
                           </div>
                         </td>
@@ -224,7 +222,6 @@ const ProductAdmin = () => {
           </div>
         </div>
       </div>
-      
     </div>
   );
 };

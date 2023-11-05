@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Link, useNavigate } from "react-router-dom";
 import { useDropdown } from "../../../hooks";
@@ -15,14 +15,14 @@ const Search = () => {
   const [search, setSearch] = useState("");
   const [categorySearch, setCategorySearch] = useState([]);
   const [searchData, setSearchData] = useState([]);
-  const { dropdowRef } = useDropdown(false);
-
+  const searchRef = useRef(null);
+  const dropdowRef = useRef(null);
+  const containerRef = useRef(null);
   const navigate = useNavigate();
   const {
     dropdow: activeSearch,
     setDropdow: setActiveSearch,
-    dropdowRef: searchRef,
-  } = useDropdown(false);
+  } = useDropdown(false, dropdowRef,containerRef);
   useEffect(() => {
     const fetchApi = async () => {
       setLoading(true);
@@ -65,7 +65,7 @@ const Search = () => {
     <>
       <div className="hidden lg:block w-full bg-white relative">
         <form action="" onSubmit={handleSubmitSearch} method="get">
-          <div className="flex items-center w-full  justify-center">
+          <div ref={containerRef} className="flex items-center w-full  justify-center">
             <div className="border rounded-s-md border-[#e5e8ec] w-[60%] h-12 flex">
               <select
                 className="px-3 text-[#212529] hidden md:block bg-transparent  outline-0 w-[150px]"
@@ -90,6 +90,11 @@ const Search = () => {
                 type="text"
                 onChange={hanldeChangeSearch}
                 onFocus={handleFocusSearch}
+                // onBlur={()=>{
+                //   setTimeout(() => {
+                //     setActiveSearch(false);
+                //   },300)
+                // }}
                 ref={searchRef}
                 defaultValue={search}
                 placeholder="Search for products..."

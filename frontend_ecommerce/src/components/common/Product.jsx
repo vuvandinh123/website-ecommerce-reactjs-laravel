@@ -142,7 +142,7 @@ const Product = ({ deals, data }) => {
             <div className="flex items-center text-[#1c8e24] text-[12px] ">
               {" "}
               <AiOutlineCheck className="me-2" /> In stock{" "}
-              <span className="text-black ms-2"> 3 Products</span>
+              <span className="text-black ms-2"> {data?.quantity} Products</span>
             </div>
           </div>
           <button

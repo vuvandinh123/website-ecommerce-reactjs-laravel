@@ -3,6 +3,16 @@ import { useRef } from "react";
 import { useOffcanvas } from "../../hooks";
 import { Link } from "react-router-dom";
 import Toast from "./Toast";
+import {
+  ADMIN_BRANDS,
+  ADMIN_CATEGORIES,
+  ADMIN_DASHBOARD,
+  ADMIN_IMPORT_PRODUCT,
+  ADMIN_MENUS,
+  ADMIN_ORDERS,
+  ADMIN_PAGES,
+  ADMIN_PRODUCTS,
+} from "../../constants/routes";
 
 const Siderbar = ({ isSidebarOpen, setToken }) => {
   const iconRef = useRef(null);
@@ -21,9 +31,8 @@ const Siderbar = ({ isSidebarOpen, setToken }) => {
     >
       <div className="p-2 space-y-4">
         <Link
-          to={"/admin"}
+          to={ADMIN_DASHBOARD}
           className="relative px-3 py-3 flex items-center space-x-4 justify-start text-gray-500 rounded-lg group"
-          onClick="highlightSidebarItem(this)"
         >
           <i className="fas fa-home text-lg" />
           <span
@@ -35,9 +44,8 @@ const Siderbar = ({ isSidebarOpen, setToken }) => {
           </span>
         </Link>
         <Link
-          to={"products"}
+          to={ADMIN_PRODUCTS}
           className="relative px-3 py-3 flex items-center space-x-4 justify-start text-gray-500 rounded-lg group"
-          onClick="highlightSidebarItem(this)"
         >
           <i className="fas fa-check-circle" />
           <span
@@ -49,9 +57,8 @@ const Siderbar = ({ isSidebarOpen, setToken }) => {
           </span>
         </Link>
         <Link
-          to={"categories"}
+          to={ADMIN_CATEGORIES}
           className="relative px-3 py-3 flex items-center space-x-4 justify-start text-gray-500 rounded-lg group"
-          onClick="highlightSidebarItem(this)"
         >
           <i className="fas fa-check-circle" />
           <span
@@ -59,13 +66,12 @@ const Siderbar = ({ isSidebarOpen, setToken }) => {
               isSidebarOpen ? "opacity-100" : "opacity-0"
             }`}
           >
-           Danh mục
+            Danh mục
           </span>
         </Link>
         <Link
-          to={"brands"}
+          to={ADMIN_BRANDS}
           className="relative px-3 py-3 flex items-center space-x-4 justify-start text-gray-500 rounded-lg group"
-          onClick="highlightSidebarItem(this)"
         >
           <i className="fas fa-check-circle" />
           <span
@@ -77,10 +83,7 @@ const Siderbar = ({ isSidebarOpen, setToken }) => {
           </span>
         </Link>
         {/* Usuarios */}
-        <button
-          className="relative px-3 py-3 flex items-center space-x-4 justify-start text-gray-500 rounded-lg group"
-          onClick="highlightSidebarItem(this)"
-        >
+        <button className="relative px-3 py-3 flex items-center space-x-4 justify-start text-gray-500 rounded-lg group">
           <i className="fas fa-users" />
           <span
             className={`font-medium whitespace-nowrap transition-all duration-200 opacity-0 ${
@@ -92,9 +95,8 @@ const Siderbar = ({ isSidebarOpen, setToken }) => {
         </button>
         {/* Comercios */}
         <Link
-          to={"/admin/import-product"}
+          to={ADMIN_IMPORT_PRODUCT}
           className="relative px-3 py-3 flex items-center space-x-4 justify-start text-gray-500 rounded-lg group"
-          onClick="highlightSidebarItem(this)"
         >
           <i className="fas fa-store" />
           <span
@@ -105,10 +107,36 @@ const Siderbar = ({ isSidebarOpen, setToken }) => {
             Nhập hàng
           </span>
         </Link>
-        {/* Transacciones */}
-        <button
+        <Link
+          to={ADMIN_PAGES}
           className="relative px-3 py-3 flex items-center space-x-4 justify-start text-gray-500 rounded-lg group"
-          onClick="highlightSidebarItem(this)"
+        >
+          <i className="fas fa-store" />
+          <span
+            className={`font-medium whitespace-nowrap transition-all duration-200 opacity-0 ${
+              isSidebarOpen ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Trang đơn
+          </span>
+        </Link>
+        <Link
+          to={ADMIN_MENUS}
+          className="relative px-3 py-3 flex items-center space-x-4 justify-start text-gray-500 rounded-lg group"
+        >
+          <i className="fas fa-store" />
+          <span
+            className={`font-medium whitespace-nowrap transition-all duration-200 opacity-0 ${
+              isSidebarOpen ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Menu
+          </span>
+        </Link>
+        {/* Transacciones */}
+        <Link
+          to={ADMIN_ORDERS}
+          className="relative px-3 py-3 flex items-center space-x-4 justify-start text-gray-500 rounded-lg group"
         >
           <i className="fas fa-exchange-alt" />
           <span
@@ -116,9 +144,9 @@ const Siderbar = ({ isSidebarOpen, setToken }) => {
               isSidebarOpen ? "opacity-100" : "opacity-0"
             }`}
           >
-            Xuất hàng
+            Đơn hàng
           </span>
-        </button>
+        </Link>
         {/* Cerrar sesión */}
         <button
           ref={iconRef}

@@ -1,14 +1,31 @@
 import { useEffect, useState } from "react";
 import imageSale from "../../../../public/sale.svg";
-import { useDropdown } from "../../../hooks";
+import { useApiCall, useDropdown } from "../../../hooks";
 import { Link } from "react-router-dom";
 import { HiOutlineMenuAlt1 } from "react-icons/hi";
 import PropTypes from "prop-types";
+import { menuApi } from "../../../api/site/menuApi";
+import MenuItem from "./MenuItem";
+import Sidebar from "./Sidebar";
+function buildMenuTree(menuItems, parent_id = 0) {
+  let menuTree = [];
+  menuItems.forEach(item => {
+    if (item.parent_id === parent_id) {
+      const children = buildMenuTree(menuItems, item.id);
+      if (children.length) {
+        item.children = children;
+      }
+      menuTree.push(item);
+    }
+  });
+  return menuTree;
+}
 
-const Navigate = ({isOpenMenu, setIsOpenMenu,menuRef}) => {
+const Navigate = ({ isOpenMenu, setIsOpenMenu, menuRef }) => {
   const [scroll, setScroll] = useState(false);
   const [dropdowSub, setDropdowSub] = useState(false);
   const { dropdow, setDropdow, dropdowRef } = useDropdown(false);
+  const [menu,setMenu] = useState([])
   useEffect(() => {
     const scroll = window.addEventListener("scroll", () => {
       if (window.scrollY > 200) {
@@ -22,14 +39,25 @@ const Navigate = ({isOpenMenu, setIsOpenMenu,menuRef}) => {
       removeEventListener("scroll", scroll);
     };
   }, []);
+  const { data } = useApiCall(
+    async () => {
+      const res = await menuApi.getAll();
+      const menuTree = buildMenuTree(res.data.data);
+      setMenu(menuTree)
+      return null
+    },
+    [buildMenuTree],
+    []
+  );
+
   const handleClickDropdown = () => {
     if (window.scrollY > 200 || !(window.location.pathname === "/")) {
       setDropdow(!dropdow);
     }
   };
-  const handleClickDropdownSubmenu = () => {
-    setDropdowSub(!dropdowSub);
-  };
+  // const handleClickDropdownSubmenu = () => {
+  //   setDropdowSub(!dropdowSub);
+  // };
 
   const handleClickHiddenMenu = () => {
     setIsOpenMenu(false);
@@ -49,267 +77,7 @@ const Navigate = ({isOpenMenu, setIsOpenMenu,menuRef}) => {
             "fixed z-50 bg-[#505050cb] top-0 left-0  bottom-0 right-0"
           }  max-w-[100%] lg:px-5 mx-auto items-center`}
         >
-          <div
-            ref={dropdowRef}
-            onClick={handleClickDropdown}
-            className={`w-64 z-50 flex-none before:content-[''] before:bg-[#241adf]  before:block before:h-[3px] before:opacity-0 before:left-[50%] before:right-[50%] before:hover:opacity-100 before:absolute hover:before:left-0 hover:before:right-0 before:duration-300 before:top-0 relative  transition-all cursor-pointer  py-4 ${
-              isOpenMenu && "hidden"
-            }`}
-          >
-            <div className="flex items-center">
-              <HiOutlineMenuAlt1 className="text-[25px] mr-3" />
-              Browse All Categories
-            </div>
-            <div
-              className={`scale-y-0  opacity-0 transition-all duration-500 z-10 ${
-                dropdow && "!scale-100 opacity-100"
-              }`}
-            >
-              <div className="absolute mt-5 bg-white p-3 bottom-auto left-0 right-0 shadow-md">
-                <ul className="leading-8">
-                  <div className="relative group">
-                    <div className="flex justify-between hover:text-[#2b38d1] items-center">
-                      <li className="py-2  px-2 border-b-[1px] ">Home</li>
-                      <i className="fa-solid fa-chevron-right text-[9px]"></i>
-                    </div>
-                    <div className="absolute group-hover:translate-x-0 group-hover:opacity-100 duration-300 group-hover:visible transition-all  left-[106%] translate-x-5 opacity-0 invisible top-0 bg-white shadow-md">
-                      <div className="w-[800px] p-5">
-                        <div className="grid grid-cols-3">
-                          <div>
-                            <h3 className="text-[#212529] font-semibold mb-2">
-                              Laptop computer
-                            </h3>
-                            <ul>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                            </ul>
-                            <h3 className="text-[#212529] font-semibold mb-2">
-                              Laptop computer
-                            </h3>
-                            <ul>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                            </ul>
-                          </div>
-                          <div>
-                            <h3 className="text-[#212529] font-semibold mb-2">
-                              Laptop computer
-                            </h3>
-                            <ul>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                            </ul>
-                            <h3 className="text-[#212529] font-semibold mb-2">
-                              Laptop computer
-                            </h3>
-                            <ul>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  className="text-[#515d66] block hover:text-[#2b38d1]"
-                                  href="#"
-                                >
-                                  hello
-                                </a>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="max-h-xs">
-                            <a href="">
-                              <div className="group/1  overflow-hidden">
-                                <img
-                                  className="group-hover/1:scale-105 transition-all duration-200"
-                                  src="https://demo-uminex.myshopify.com/cdn/shop/files/banner-menu1.jpg?v=1671607665&width=2000"
-                                  alt=""
-                                />
-                              </div>
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="relative group">
-                    <div className="flex justify-between hover:text-[#2b38d1] items-center">
-                      <li className="py-2  px-2 border-b-[1px] ">Home</li>
-                      <i className="fa-solid fa-chevron-right text-[9px]"></i>
-                    </div>
-                    <div className="absolute w-[200px] group-hover:translate-x-0 group-hover:opacity-100 duration-300 group-hover:visible transition-all  left-[106%] translate-x-5 opacity-0 invisible top-0 bg-white shadow-md">
-                      <div className=" p-6">
-                        <div>
-                          <ul className="">
-                            <li className="py-1">
-                              <div className='block before:content-[""] before:block before:bg-transparent before:w-[50px] before:h-20 before:left-[90%] before:z-20 before:absolute group/2 hover:ps-1 transition-all relative'>
-                                <div className="flex justify-between hover:text-[#2b38d1] items-center">
-                                  <p className="">hello dasdsada</p>
-                                  <i className="fa-solid fa-chevron-right text-[9px]"></i>
-                                </div>
-                                <div className="absolute w-[200px] group-hover/2:translate-x-0 group-hover/2:opacity-100 duration-300 group-hover/2:visible transition-all  left-[117%] translate-x-5 opacity-0 invisible top-0 bg-white shadow-md">
-                                  <ul className="p-4">
-                                    <li>
-                                      <a
-                                        className="hover:text-[#2b38d1] hover:ps-1 transition-all "
-                                        href=""
-                                      >
-                                        hello dasdsada
-                                      </a>
-                                    </li>
-                                    <li>
-                                      <a
-                                        className="hover:text-[#2b38d1] hover:ps-1 transition-all "
-                                        href=""
-                                      >
-                                        hello dasdsada
-                                      </a>
-                                    </li>
-                                    <li>
-                                      <a
-                                        className="hover:text-[#2b38d1] hover:ps-1 transition-all "
-                                        href=""
-                                      >
-                                        hello dasdsada
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </li>
-                            <li className="py-1">
-                              <a
-                                className="hover:text-[#2b38d1] block hover:ps-1 transition-all "
-                                href=""
-                              >
-                                hello dasdsada
-                              </a>
-                            </li>
-                            <li className="py-1">
-                              <a
-                                className="hover:text-[#2b38d1] block hover:ps-1 transition-all "
-                                href=""
-                              >
-                                hello dasdsada
-                              </a>
-                            </li>
-                            <li className="py-1">
-                              <a
-                                className="hover:text-[#2b38d1] block hover:ps-1 transition-all "
-                                href=""
-                              >
-                                hello dasdsada
-                              </a>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <Link to={"/"} className="hover:text-[#2b38d1]">
-                    <li className="py-2  px-2 border-b-[1px] ">Home</li>
-                  </Link>
-                  <Link to={"/"} href="#" className="hover:text-[#2b38d1]">
-                    <li className="py-2  px-2 border-b-[1px] ">Home</li>
-                  </Link>
-                </ul>
-              </div>
-            </div>
-          </div>
+         <Sidebar isOpenMenu={isOpenMenu} dropdowRef={dropdowRef} handleClickDropdown={handleClickDropdown} dropdow={dropdow}/>
           <div
             ref={menuRef}
             className={`${
@@ -317,7 +85,7 @@ const Navigate = ({isOpenMenu, setIsOpenMenu,menuRef}) => {
             } lg:border-l lg:border-[#ccc] transition-all duration-300  lg:w-auto lg:bg-transparent bg-white h-full`}
           >
             <ul
-              className={`flex ${
+              className={`flex items-center ${
                 isOpenMenu && "flex-col h-[100vh] w-full overflow-scroll "
               } relative gap-x-8 justify-start px-6`}
             >
@@ -344,7 +112,10 @@ const Navigate = ({isOpenMenu, setIsOpenMenu,menuRef}) => {
                   </button>
                 </div>
               </li>
-              <li className=" lg:py-0 py-5 border-b lg:border-b-0">
+              {menu.map((item, index) => {
+                return <MenuItem key={index} item={item} />;
+              })}
+              {/* <li className=" lg:py-0 py-5 border-b lg:border-b-0">
                 <Link
                   to={"/"}
                   className=" text-[#212529] hover:text-[#2b38d1]"
@@ -353,19 +124,30 @@ const Navigate = ({isOpenMenu, setIsOpenMenu,menuRef}) => {
                   Home{" "}
                 </Link>
               </li>
-              <li className=" lg:py-0 relative py-5 border-b lg:border-b-0">
-                <div className="flex justify-between items-center">
-                  <Link
-                    to={"/categories/all"}
-                    className="block w-4/5 text-[#212529] hover:text-[#2b38d1]"
-                    href=""
-                  >
-                    Shop{" "}
-                  </Link>
-                  <i
-                    onClick={handleClickDropdownSubmenu}
-                    className="fa-solid w-[20%] fa-chevron-down text-end mr-2 text-[12px]"
-                  ></i>
+              <li className=" lg:py-0 relative py-5 relative border-b lg:border-b-0">
+                <div>
+                  <div className="flex justify-between items-center">
+                    <Link
+                      to={"/categories/all"}
+                      className="block w-4/5 text-[#212529] hover:text-[#2b38d1]"
+                      href=""
+                    >
+                      Shop{" "}
+                    </Link>
+                    <i
+                      onClick={handleClickDropdownSubmenu}
+                      className="fa-solid w-[20%] fa-chevron-down text-end mr-2 text-[12px]"
+                    ></i>
+                  </div>
+                </div>
+                <div className="absolute top-full rounded-md -left-3 z-30  bg-white min-w-[150px] shadow-md p-3">
+                  <ul className="leading-8">
+                    <li className=""><a className="block hover:ml-1 duration-150 transition-all hover:text-blue-600" href="">item1</a></li>
+                    <li className="py-2"><a className="block hover:ml-1 duration-150 transition-all hover:text-blue-600" href="">item1</a></li>
+                    <li className="py-2"><a className="block hover:ml-1 duration-150 transition-all hover:text-blue-600" href="">item1</a></li>
+                    <li className="py-2"><a className="block hover:ml-1 duration-150 transition-all hover:text-blue-600" href="">item1</a></li>
+                    <li className="py-2"><a className="block hover:ml-1 duration-150 transition-all hover:text-blue-600" href="">item1</a></li>
+                  </ul>
                 </div>
                 <div
                   className={`max-h-0 lg:hidden overflow-hidden transition-all mt-2 ${
@@ -405,7 +187,7 @@ const Navigate = ({isOpenMenu, setIsOpenMenu,menuRef}) => {
                 <a className=" text-[#212529] hover:text-[#2b38d1]" href="">
                   Blog
                 </a>
-              </li>
+              </li> */}
               <li className=" lg:py-0 py-5 border-b lg:border-b-0">
                 <a className=" hover:text-[#2b38d1] text-red-600" href="">
                   By Uminex!
@@ -431,5 +213,5 @@ Navigate.propTypes = {
   isOpenMenu: PropTypes.bool,
   setIsOpenMenu: PropTypes.func,
   menuRef: PropTypes.object,
-}
+};
 export default Navigate;

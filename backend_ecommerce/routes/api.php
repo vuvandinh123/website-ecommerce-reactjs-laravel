@@ -18,7 +18,7 @@ Route::prefix('products')->group(function () {
     Route::get('/', 'App\Http\Controllers\frontend\ProductController@index');
     Route::get('/featured', 'App\Http\Controllers\frontend\ProductController@featured');
     Route::get('/top_selling', 'App\Http\Controllers\frontend\ProductController@top_selling');
-    Route::get('/search/{value}', 'App\Http\Controllers\frontend\ProductController@search');
+    Route::post('/search/{id}', 'App\Http\Controllers\frontend\ProductController@search');
     Route::get('/{slug}', 'App\Http\Controllers\frontend\ProductController@show');
     Route::get('/categories/{id}', 'App\Http\Controllers\frontend\ProductController@productByCategory');
 });
@@ -39,7 +39,23 @@ Route::prefix('topic')->group(function () {
     Route::get('/', 'App\Http\Controllers\frontend\TopicController@index');
     Route::get('/{slug}', 'App\Http\Controllers\frontend\TopicController@show');
 });
+Route::get('/menus', 'App\Http\Controllers\frontend\MenuController@index');
+Route::get('/baskets', 'App\Http\Controllers\frontend\OrderController@baskets');
 
+Route::prefix('page')->group(function () {
+    Route::get('/{slug}', 'App\Http\Controllers\frontend\PageController@show');
+});
+Route::group([
+    'middleware' => ['auth:api'],
+], function () {
+    Route::prefix('orders')->group(function () {
+        Route::get('/{id}', 'App\Http\Controllers\frontend\OrderController@index');
+        Route::get('/{id}/show', 'App\Http\Controllers\frontend\OrderController@show');
+        Route::post('/', 'App\Http\Controllers\frontend\OrderController@store');
+        Route::put('/{id}', 'App\Http\Controllers\frontend\OrderController@update');
+        Route::delete('/{id}', 'App\Http\Controllers\frontend\OrderController@destroy');
+    });
+});
 Route::prefix('admin')->group(function () {
     Route::post('login', 'App\Http\Controllers\backend\AuthController@login');
     Route::group([
@@ -56,6 +72,23 @@ Route::prefix('admin')->group(function () {
             Route::delete('{id}', 'App\Http\Controllers\backend\ProductController@destroy');
             Route::put('status/{id}', 'App\Http\Controllers\backend\ProductController@status');
             Route::put('/{id}', 'App\Http\Controllers\backend\ProductController@update');
+        });
+        Route::prefix('menus')->group(function () { 
+            Route::get('/', 'App\Http\Controllers\backend\MenuController@index');
+            Route::post('/', 'App\Http\Controllers\backend\MenuController@store');
+            Route::get('/category', 'App\Http\Controllers\backend\MenuController@getCategoryMenu');
+            // Route::get('{slug}', 'App\Http\Controllers\backend\ProductController@show');
+            // Route::delete('{id}', 'App\Http\Controllers\backend\ProductController@destroy');
+            // Route::put('status/{id}', 'App\Http\Controllers\backend\ProductController@status');
+            // Route::put('/{id}', 'App\Http\Controllers\backend\ProductController@update');
+        });
+        Route::prefix('contacts')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\ContactController@index');
+            Route::post('/', 'App\Http\Controllers\backend\ContactController@store');
+            Route::get('{slug}', 'App\Http\Controllers\backend\ContactController@show');
+            Route::delete('{id}', 'App\Http\Controllers\backend\ContactController@destroy');
+            Route::put('status/{id}', 'App\Http\Controllers\backend\ContactController@status');
+            Route::put('/{id}', 'App\Http\Controllers\backend\ContactController@update');
         });
         Route::prefix('categories')->group(function () {
             Route::get('/', 'App\Http\Controllers\backend\CategoryController@index');
@@ -79,6 +112,13 @@ Route::prefix('admin')->group(function () {
             Route::get('/{id}', 'App\Http\Controllers\backend\PostController@show');
             Route::put('/{id}', 'App\Http\Controllers\backend\PostController@update');
             Route::delete('/{id}', 'App\Http\Controllers\backend\PostController@destroy');
+        });
+        Route::prefix('pages')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\PageController@index');
+            Route::post('/', 'App\Http\Controllers\backend\PageController@store');
+            Route::get('/{id}', 'App\Http\Controllers\backend\PageController@show');
+            Route::put('/{id}', 'App\Http\Controllers\backend\PageController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\backend\PageController@destroy');
         });
         Route::prefix('topics')->group(function () {
             Route::get('/', 'App\Http\Controllers\backend\TopicController@index');
@@ -114,6 +154,13 @@ Route::prefix('admin')->group(function () {
             Route::get('/{id}', 'App\Http\Controllers\backend\InvoicesController@show');
             Route::put('/{id}', 'App\Http\Controllers\backend\InvoicesController@update');
             Route::delete('/{id}', 'App\Http\Controllers\backend\InvoicesController@destroy');
+        });
+        Route::prefix('orders')->group(function () {
+            Route::get('/', 'App\Http\Controllers\backend\OrderController@index');
+            Route::post('/', 'App\Http\Controllers\backend\OrderController@store');
+            Route::get('/{id}', 'App\Http\Controllers\backend\OrderController@show');
+            Route::put('/{id}', 'App\Http\Controllers\backend\OrderController@update');
+            Route::delete('/{id}', 'App\Http\Controllers\backend\OrderController@destroy');
         });
     });
 });

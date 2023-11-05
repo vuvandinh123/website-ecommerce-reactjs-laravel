@@ -1,12 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useState } from "react";
-import { File, Input, Select } from "../../../components/admin/form";
+import { useRef, useState } from "react";
+import { Editorjs, File, Input, Select } from "../../../components/admin/form";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useApiCall } from "../../../hooks";
 import { categoriesApi } from "../../../api/admin/categoriesApi";
-
 const Create = () => {
   const navigate = useNavigate();
   const [images, setImage] = useState([]);
@@ -14,14 +13,14 @@ const Create = () => {
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-        const imageUrl = URL.createObjectURL(selectedFile);
-        setSrc(imageUrl);
-        setImage(selectedFile)
-      }
+      const imageUrl = URL.createObjectURL(selectedFile);
+      setSrc(imageUrl);
+      setImage(selectedFile);
+    }
   };
   const { data: categories } = useApiCall(
     async () => {
-      return await categoriesApi.getAll();
+      return await categoriesApi.getAll({ limit: 100 });
     },
     [],
     []

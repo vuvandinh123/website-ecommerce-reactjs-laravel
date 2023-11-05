@@ -1,13 +1,14 @@
-import { AppURL } from "../../../api/AppURL";
 import { useApiCall } from "../../../hooks";
-import NotImage from "../../../assets/image/icon-image-not-found-free-vector.jpg";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import Pagination from "../../../components/admin/Pagination";
 import { invoicesApi } from "../../../api/admin/invoices";
 import Modal from "../../../components/admin/Modal";
 import SkeletonImport from "./SkeletonImport";
-const ProductAdmin = () => {
+import formathDate from "../../../utils/formathDate";
+import { RiDeleteBin2Line } from "react-icons/ri";
+import { BiShowAlt } from "react-icons/bi";
+const Import = () => {
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState("");
   const [status, setStatus] = useState(0);
@@ -141,7 +142,7 @@ const ProductAdmin = () => {
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <p className="text-gray-900 whitespace-no-wrap">
-                            {item?.created_at}
+                            {formathDate(item?.created_at)}
                           </p>
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm"></td>
@@ -149,16 +150,16 @@ const ProductAdmin = () => {
                           <div className="flex gap-5">
                             <span
                               onClick={() => handleShowClick(item.id)}
-                              className=" bg-yellow-400 px-4 py-1 rounded-md cursor-pointer "
+                              className="  px-4 py-1 rounded-md cursor-pointer "
                             >
-                              show
+                              <BiShowAlt className=" text-2xl font-bold" />
                             </span>
 
                             <button
                               onClick={() => handleDeleteClick(item.id)}
                               className="text-red-400 hover:text-red-600"
                             >
-                              Delete
+                              <RiDeleteBin2Line className="text-xl font-bold" />
                             </button>
                           </div>
                         </td>
@@ -183,4 +184,4 @@ const ProductAdmin = () => {
   );
 };
 
-export default ProductAdmin;
+export default Import;

@@ -64,7 +64,6 @@ const News = () => {
     []
   );
   const listPost = data?.data?.data?.data || [];
-  console.log(listPost);
   const handleClickNext = () => {
     arrowsRef.current.slickNext();
   };
@@ -94,7 +93,7 @@ const News = () => {
               <div key={index} className="">
                 <div className="relative   rounded-md group mx-2 overflow-hidden bg-white ">
                   <div className="overflow-hidden  min-h-[200px] relative">
-                    <Link to={`/post/${item?.slug}`}>
+                    <Link to={`/blog/${item?.slug}`}>
                       <ImageLoader
                         src={AppURL.ImageUrl + item?.image}
                         className={
@@ -108,12 +107,12 @@ const News = () => {
                       TECHNOLOGY
                     </a>
                     <h3 className="text-[17px] font-[600]">
-                      <a
-                        href=""
+                      <Link 
+                        to={`/blog/${item?.slug}`}
                         className="hover:text-[#2b38d1] text-[17px] text-ellipsis h-10 w-full line-clamp-2 leading-[1.2em] max-h-[2.4em]  overflow-hidden "
                       >
                         {item?.title}
-                      </a>{" "}
+                      </Link>{" "}
                     </h3>
                     <div className="text-[#8d979e] text-[12px] uppercase">
                       Post by ALO Support

@@ -1,13 +1,17 @@
 import { AppURL } from "../../../api/AppURL";
-import { useApiCall, useOffcanvas } from "../../../hooks";
+import { useApiCall } from "../../../hooks";
 import NotImage from "../../../assets/image/icon-image-not-found-free-vector.jpg";
 import { Link } from "react-router-dom";
-import { useRef, useState } from "react";
+import {  useState } from "react";
 import Pagination from "../../../components/admin/Pagination";
-import { productApi } from "../../../api/admin/productApi";
 import { toast } from "react-toastify";
 import { brandApi } from "../../../api/admin/brandApi";
+import formathDate from "../../../utils/formathDate";
+import { BiEdit } from "react-icons/bi";
+import { RiDeleteBin2Line } from "react-icons/ri";
+import { adminApi } from "../../../api/admin/adminApi";
 const BrandAdmin = () => {
+  const url = "/brands";
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState("");
   const [status, setStatus] = useState(0);
@@ -17,24 +21,27 @@ const BrandAdmin = () => {
     search: "",
     sortBy: "",
   });
-
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     setFilter({ ...filter, search: search });
   };
   const handleDeleteClick = async (id) => {
-    await brandApi.delete(id);
-    setDeleteId(id);
-    toast.success("Xoá sản phẩm thành công");
+    const res = await adminApi.delete(url + "/" + id);
+    if (res.status === 200) {
+      setDeleteId(id);
+      toast.success("Xoá sản phẩm thành công");
+    }
   };
   const handleStatusClick = async (id) => {
-    await brandApi.status(id);
-    setStatus(Math.random());
-    toast.success("Thay đổi trạng thái thành công");
+    const res = await brandApi.status(id);
+    if(res.status === 200){
+      toast.success("Thay đổi trạng thái thành công");
+      setStatus(Math.random());
+    }
   };
   const { data, loading } = useApiCall(
     async () => {
-      return await brandApi.getAll({ ...filter });
+      return await adminApi.get(url, { ...filter });
     },
     [filter, deleteId, status],
     []
@@ -101,7 +108,7 @@ const BrandAdmin = () => {
                     <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Thương hiệu
                     </th>
-                    
+
                     <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       ngày tạo
                     </th>
@@ -141,10 +148,10 @@ const BrandAdmin = () => {
                             </div>
                           </div>
                         </td>
-                       
+
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <p className="text-gray-900 whitespace-no-wrap">
-                            {product.created_at}
+                            {formathDate(product.created_at)}
                           </p>
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -170,13 +177,13 @@ const BrandAdmin = () => {
                               to={`${product.id}/edit`}
                               className="text-indigo-600 hover:text-indigo-900"
                             >
-                              Edit
+                              <BiEdit className=" text-xl font-bold" />
                             </Link>
                             <button
                               onClick={() => handleDeleteClick(product.id)}
                               className="text-red-400 hover:text-red-600"
                             >
-                              Delete
+                              <RiDeleteBin2Line className="text-xl font-bold" />
                             </button>
                           </div>
                         </td>

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./style.css";
-import { useAuth, useToken } from "../../hooks";
+import { useToken } from "../../hooks";
 import axios from "axios";
 import * as Yup from "yup";
 
@@ -10,7 +10,12 @@ const Login = () => {
   const navigate = useNavigate();
   const { token, setToken } = useToken();
   if (token) {
-    navigate("/");
+    const url = sessionStorage.getItem("url");
+    if (url) {
+      navigate(url);
+    } else {
+      navigate("/");
+    }
   }
   const handleSubmitLogin = async (values) => {
     try {

@@ -25,7 +25,7 @@ const Search = () => {
     fetchApi();
   }, [cat, q, filter.limit]);
   return (
-    <div className="bg-[#F1F5F6] py-10">
+    <div className="bg-[#F1F5F6] pb-10">
       <div className="bg-[url(https://demo-uminex.myshopify.com/cdn/shop/files/bg_breadcrumbs_1920x.png?v=1684232545)] h-36 text-white flex justify-center items-center flex-col gap-y-3">
         <h2 className="text-2xl font-semibold">
           {data.length} RESULTS FOR "{q}"
