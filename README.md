@@ -1,5 +1,4 @@
-# VŨ VĂN ĐỊNH 2121110393 
-## Kế hoạch Phát triển Trang web Bán Đồ điện tử trong 8 Tuần
+# Kế hoạch Phát triển Trang web Bán Đồ điện tử trong 8 Tuần
 ## công nghệ frontend nổi bật
 - reactJS
 - redux
@@ -53,4 +52,3 @@
 - Kiểm tra cuối cùng và bảo mật.
 - Tối ưu hóa trải nghiệm người dùng và thử nghiệm trên nhiều trình duyệt.
 - Triển khai ứng dụng lên môi trường sản phẩm.
-- Đi báo cáo
